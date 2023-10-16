@@ -70,6 +70,34 @@ QVariant AnnotationModel::data(const QModelIndex &index, int role) const
             return annotation->getId();
         case Roles::ANNOTATION_NOTIFICATION:
             return annotation->getNotification();
+        case Roles::ANNOTATION_SELECTED:
+            return annotation->isSelected();
+    }
+
+    Q_UNREACHABLE();
+
+    return {};
+}
+
+//-----------------------------------
+bool AnnotationModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if(!index.isValid())
+    {
+        return {};
+    }
+
+    const int got_role = static_cast<Roles>(role);
+    const auto annotation = m_annotations.at(index.row());
+    switch(got_role)
+    {
+        case Roles::ANNOTATION_ID:
+        case Roles::ANNOTATION_NOTIFICATION:
+            return false;
+        case Roles::ANNOTATION_SELECTED:
+            annotation->setSelected(value.toBool());
+            emit dataChanged(index, index, {Roles::ANNOTATION_SELECTED});
+            return true;
     }
 
     Q_UNREACHABLE();
@@ -83,6 +111,7 @@ QHash<int, QByteArray> AnnotationModel::roleNames() const
     return
     {
         {Roles::ANNOTATION_ID, {"annotation_id"}},
-        {Roles::ANNOTATION_NOTIFICATION, {"annotation_notification"}}
+        {Roles::ANNOTATION_NOTIFICATION, {"annotation_notification"}},
+        {Roles::ANNOTATION_SELECTED, {"annotation_selected"}}
     };
 }

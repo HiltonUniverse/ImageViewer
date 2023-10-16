@@ -159,7 +159,7 @@ RowLayout
                             color: "#666666"
                             border.color:
                             {
-                                if(model.annotation_selected)
+                                if(annotation_selected)
                                 {
                                     return "#29e817"
                                 }
@@ -180,7 +180,7 @@ RowLayout
                                 verticalAlignment: Text.AlignVCenter
                                 horizontalAlignment: Text.AlignHCenter
 
-                                text: model.annotation_id + ": " + model.annotation_name
+                                text: annotation_id + ": " + annotation_notification
                                 wrapMode: Text.Wrap
                             }
 
@@ -191,7 +191,7 @@ RowLayout
                                 anchors.fill: parent
                                 hoverEnabled: true
 
-                                onClicked: model.annotation_selected = !model.annotation_selected
+                                onClicked: annotation_selected = !annotation_selected
                             }
                         }
                     }

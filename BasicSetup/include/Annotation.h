@@ -14,6 +14,7 @@ public:
         : m_points(points)
         , m_parent_id(parentId)
         , m_color(color)
+        , m_is_selected(false)
     {
         ++m_annotation_count;
         m_id = QString::number(m_annotation_count);
@@ -55,6 +56,17 @@ public:
     {
         return m_color;
     }
+
+    bool isSelected() const
+    {
+        return m_is_selected;
+    }
+
+    void setSelected(bool selected)
+    {
+        m_is_selected = selected;
+    }
+
 private:
     inline static int m_annotation_count = 0;
 
@@ -62,4 +74,5 @@ private:
     QString m_id;
     QString m_parent_id;
     QString m_color;
+    bool m_is_selected;
 };

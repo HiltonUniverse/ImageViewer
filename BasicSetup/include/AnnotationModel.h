@@ -14,6 +14,7 @@ public:
     {
         ANNOTATION_ID = Qt::UserRole + 1,
         ANNOTATION_NOTIFICATION,
+        ANNOTATION_SELECTED
     };
 
     AnnotationModel(DataManagerImpl& dataManager);
@@ -22,6 +23,8 @@ public:
     int rowCount(const QModelIndex & parent = {}) const override;
 
     QVariant data(const QModelIndex &index, int role) const override;
+
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     QHash<int, QByteArray> roleNames() const override;
 
