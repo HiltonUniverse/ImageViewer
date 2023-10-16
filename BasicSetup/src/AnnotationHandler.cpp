@@ -48,7 +48,6 @@ void AnnotationHandler::setupConnection()
 void AnnotationHandler::paint(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(QPen(QColor("#000000"), 5));
 
     // Draw the previous path
     for (const auto& annotation : m_annotations)
@@ -58,6 +57,7 @@ void AnnotationHandler::paint(QPainter *painter)
         {
             for (int i = 1; i < path.size(); ++i)
             {
+                painter->setPen(QPen(QColor(annotation->getColor()), 5));
                 QPointF first = path[i - 1];
                 QPointF second = path[i];
                 painter->drawLine(first, second);
@@ -65,6 +65,7 @@ void AnnotationHandler::paint(QPainter *painter)
         }
     }
 
+    painter->setPen(QPen(QColor(m_pen_color), 5));
     //This is to instantly draw the lines
     for (int i = 1; i < m_current_points.size(); ++i)
     {
@@ -118,7 +119,9 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton)
     {
         auto& data_manager = DataManager::instance();
-        auto new_annotation = std::make_shared<Annotation>(m_current_points, data_manager.getActiveImage()->getId());
+        auto new_annotation = std::make_shared<Annotation>(m_current_points,
+                                                           data_manager.getActiveImage()->getId(),
+                                                           m_pen_color);
         auto command = new AnnotationUndoRedo(new_annotation, data_manager);
         data_manager.m_undo_stack.push(command);
 
@@ -126,6 +129,12 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
 
         update();
     }
+}
+
+//-----------------------------------
+void AnnotationHandler::setPenColor(const QString &penColor)
+{
+    m_pen_color = penColor;
 }
 
 //-----------------------------------

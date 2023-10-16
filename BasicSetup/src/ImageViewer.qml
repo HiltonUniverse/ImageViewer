@@ -9,7 +9,7 @@ Rectangle
     color: "#666666"
 
     signal doubleClicked;
-    property alias can_draw: drawing_canvas.can_draw
+    property alias drawing_canvas: drawing_canvas
 
     MouseArea
     {

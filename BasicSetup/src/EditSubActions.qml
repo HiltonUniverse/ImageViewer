@@ -11,59 +11,10 @@ Rectangle
 
     signal freeHandStarted
     signal colorPenSelected(var color)
-    signal colorBackgroundSelected(var color)
-
     RowLayout
     {
         anchors.fill: parent
         spacing: 0
-
-
-        //Change background action
-        Action
-        {
-            id: changeBackgroundAction
-            icon.source: "file:///Users/Hilton/Desktop/background.svg"
-            onTriggered: backgroundColorDialog.open()
-        }
-
-        //select color dialog
-        ToolButton
-        {
-            id: changeBackgroundActionButton
-            action: changeBackgroundAction
-
-            background: Rectangle
-            {
-                width: parent.width
-                height: parent.height
-                color: changeBackgroundActionButton.hovered ? "#b7b7b7" : "transparent"
-                radius: 2
-            }
-
-            ToolTip
-            {
-                visible: changeBackgroundActionButton.hovered
-                text: qsTr("Select background")
-
-                background: Rectangle
-                {
-                    color: Qt.rgba(0.74, 0.74, 0.74, 0.7)
-                    anchors.fill: parent
-                    radius: 2
-                }
-            }
-        }
-
-        ColorDialog
-        {
-            id: backgroundColorDialog
-            currentColor: "red"
-            onAccepted:
-            {
-                editSubActions.colorBackgroundSelected(backgroundColorDialog.color)
-            }
-        }
 
         Action
         {

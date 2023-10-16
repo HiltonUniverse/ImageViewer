@@ -51,15 +51,10 @@ ApplicationWindow
 
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? 30 : 0
-            onFreeHandStarted: split_viewer.can_draw = true
+            onFreeHandStarted: split_viewer.drawing_canvas.can_draw = true
             onColorPenSelected: function (color)
             {
-                console.warn("COLOR is: ", color)
-            }
-
-            onColorBackgroundSelected: function(color)
-            {
-                console.warn("BACKGROUND COLOR is: ", color)
+                split_viewer.drawing_canvas.pen_color = color;
             }
         }
 

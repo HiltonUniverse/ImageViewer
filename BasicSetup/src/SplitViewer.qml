@@ -11,7 +11,7 @@ Rectangle
     property int parent_width : 0
     property int parent_height : 0
 
-    property alias can_draw: image_viewer.can_draw
+    property alias drawing_canvas: image_viewer.drawing_canvas
 
     QtObject
     {

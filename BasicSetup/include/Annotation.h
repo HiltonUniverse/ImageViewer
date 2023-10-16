@@ -8,9 +8,12 @@ class Annotation
 {
 public:
     //-----------------------------------
-    Annotation(const QVector<QPointF>& points, const QString& parentId)
+    Annotation(const QVector<QPointF>& points,
+               const QString& parentId,
+               const QString& color)
         : m_points(points)
         , m_parent_id(parentId)
+        , m_color(color)
     {
         ++m_annotation_count;
         m_id = QString::number(m_annotation_count);
@@ -43,10 +46,20 @@ public:
         return m_points;
     }
 
+    void setColor(const QString& color)
+    {
+        m_color = color;
+    }
+
+    QString getColor() const
+    {
+        return m_color;
+    }
 private:
     inline static int m_annotation_count = 0;
 
     QVector<QPointF> m_points;
     QString m_id;
     QString m_parent_id;
+    QString m_color;
 };
