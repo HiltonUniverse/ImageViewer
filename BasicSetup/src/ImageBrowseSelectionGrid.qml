@@ -47,7 +47,7 @@ Rectangle
                         cpp_image_model.loadDraggedDroppedImages(drop.urls)
                     }
                 }
-                enabled: grid_view.model == null
+                enabled: grid_view.count == 0
             }
 
             Text
@@ -64,7 +64,7 @@ Rectangle
                 font.bold: true
                 font.pixelSize: 13
 
-                visible: grid_view.model == null
+                visible: grid_view.count == 0
             }
 
             GridView

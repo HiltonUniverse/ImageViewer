@@ -91,7 +91,7 @@ ApplicationWindow
 
                 Layout.fillHeight: true
                 Layout.minimumWidth: 10
-                model: cpp_dummy_model
+                model: cpp_annotation_model
             }
         }
     }

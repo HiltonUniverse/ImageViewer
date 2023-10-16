@@ -5,7 +5,7 @@ Rectangle
     id: delegate
 
     width: 245
-    height: 215
+    height: 200
     border.color: is_image_selected ? "#29e817"
                                     : "black"
     border.width: 2
@@ -16,8 +16,8 @@ Rectangle
         id:image
 
         anchors.centerIn: parent
-        width: 230
-        height: 210
+        width: parent.width - 15
+        height: parent.height - 10
         source: image_path
         fillMode: Image.PreserveAspectFit
     }

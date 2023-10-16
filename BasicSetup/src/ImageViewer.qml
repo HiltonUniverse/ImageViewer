@@ -20,8 +20,8 @@ Rectangle
     Rectangle
     {
         id: main_viewer
-        height: 400
-        width: 600
+        height: 600
+        width: 800
 
         color: "black"
         anchors.centerIn: parent

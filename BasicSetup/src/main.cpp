@@ -7,8 +7,6 @@ int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    //qmlRegisterType<AnnotationHandler>("com.example", 1, 0, "AnnotationHandler");
-
     QQmlApplicationEngine engine;
     StartupHandler handler(engine);
 

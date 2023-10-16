@@ -37,6 +37,10 @@ public:
     void addImage(std::shared_ptr<Image> image)
     {
         m_images.push_back(image);
+        if(m_images.size() == 1)
+        {
+            setActiveImage(image);
+        }
     }
 
     //-----------------------------------

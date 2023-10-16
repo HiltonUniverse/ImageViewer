@@ -92,6 +92,7 @@ RowLayout
             color: "gray"
             font.bold: true
             font.pixelSize: 13
+            visible: list_view.count == 0
         }
 
         Flickable
@@ -126,7 +127,7 @@ RowLayout
 
                     Text
                     {
-                        text: qsTr("FREE HAND ANNOTATIONS")
+                        text: qsTr("ANNOTATIONS")
                         anchors.fill: parent
 
                         verticalAlignment: Text.AlignVCenter

@@ -9,7 +9,7 @@
 ImageModel::ImageModel(DataManagerImpl& dataManager)
     : m_data_manager(dataManager)
 {
-    loadModel();
+    //loadModel();
     setupConnection();
 }
 
@@ -174,20 +174,29 @@ void ImageModel::loadFromFolder(const QString &path)
     QStringList name_list = directory.entryList(QDir::Files);
 
     beginResetModel();
+
     for(auto &name : name_list)
     {
         const QString path = directory.absoluteFilePath(name).prepend("file://");
         auto image = std::make_shared<Image>(name, path);
+        m_images.push_back(image);
         m_data_manager.addImage(image);
     }
+
     endResetModel();
 }
 
 //-----------------------------------
 void ImageModel::loadDraggedDroppedImages(const QList<QUrl> &paths)
 {
+    beginResetModel();
+
     for(const QUrl& path : paths)
     {
-        std::make_shared<Image>(path.fileName(), path.toDisplayString());
+        auto image = std::make_shared<Image>(path.fileName(), path.toDisplayString());
+        m_images.push_back(image);
+        m_data_manager.addImage(image);
     }
+
+    endResetModel();
 }
