@@ -2,6 +2,9 @@
 #include "SelectUndoRedo.h"
 #include "Image.h"
 
+#include <QDir>
+
+
 //-----------------------------------
 ImageModel::ImageModel(DataManagerImpl& dataManager)
     : m_data_manager(dataManager)
@@ -157,6 +160,34 @@ QHash<int, QByteArray> ImageModel::roleNames() const
         {Roles::IMAGE_PATH, {"image_path"}},
         {Roles::HAS_ANNOTATIONS, {"has_annotations"}},
         {Roles::IS_IMAGE_SELECTED, {"is_image_selected"}},
-
     };
+}
+
+//-----------------------------------
+void ImageModel::loadFromFolder(const QString &path)
+{
+    QString modified_path = path;
+    modified_path.remove("file://");
+
+    //browse files inside the path
+    QDir directory(modified_path);
+    QStringList name_list = directory.entryList(QDir::Files);
+
+    beginResetModel();
+    for(auto &name : name_list)
+    {
+        const QString path = directory.absoluteFilePath(name).prepend("file://");
+        auto image = std::make_shared<Image>(name, path);
+        m_data_manager.addImage(image);
+    }
+    endResetModel();
+}
+
+//-----------------------------------
+void ImageModel::loadDraggedDroppedImages(const QList<QUrl> &paths)
+{
+    for(const QUrl& path : paths)
+    {
+        std::make_shared<Image>(path.fileName(), path.toDisplayString());
+    }
 }

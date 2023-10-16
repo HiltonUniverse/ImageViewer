@@ -8,11 +8,9 @@
 
 //-----------------------------------
 AnnotationHandler::AnnotationHandler()
-    : m_can_draw(true)
+    : m_can_draw(false)
 {
-    setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
     setFlag(ItemAcceptsInputMethod, true);
-
     setupConnection();
 }
 
@@ -130,10 +128,13 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
+//-----------------------------------
 void AnnotationHandler::setCanDraw(bool canDraw)
 {
     m_can_draw = canDraw;
+
     setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
+
     if(m_can_draw)
     {
         setCursor(QCursor(Qt::CrossCursor));

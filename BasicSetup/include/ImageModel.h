@@ -5,6 +5,7 @@
 
 #include <QAbstractListModel>
 #include <QObject>
+#include <QUrl>
 
 class ImageModel : public QAbstractListModel
 {
@@ -28,6 +29,11 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     QHash<int, QByteArray> roleNames() const override;
+
+    Q_INVOKABLE void loadFromFolder(const QString& path);
+
+    Q_INVOKABLE void loadDraggedDroppedImages(const QList<QUrl>& paths);
+
 
 private:
     void loadModel();

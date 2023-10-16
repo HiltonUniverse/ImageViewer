@@ -29,7 +29,7 @@ public:
         for(auto &name : name_list)
         {
             const QString path = directory.absoluteFilePath(name).prepend("file://");
-            auto image = std::make_shared<Image>();
+            auto image = std::make_shared<Image>("test", path);
             image->setPath(path);
             data_manager.addImage(image);
         }

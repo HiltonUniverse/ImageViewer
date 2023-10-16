@@ -11,6 +11,15 @@ qt_add_qml_module(${APP_NAME}
     VERSION 1.0
     QML_FILES
         src/main.qml
+        src/HeaderActions.qml
+        src/EditSubActions.qml
+        src/ShareImageSubActions.qml
+        src/ImageBrowseSelectionGrid.qml
+        src/ImageViewer.qml
+        src/SplitViewer.qml
+        src/SmartPanel.qml
+        src/ImageDelegate.qml
+        src/BrowseImage.qml
 )
 
 target_link_libraries(${APP_NAME} PRIVATE Qt6::Quick Qt6::Widgets)

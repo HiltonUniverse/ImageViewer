@@ -7,7 +7,7 @@
 class AnnotationHandler : public QQuickPaintedItem
 {
     Q_OBJECT
-
+    Q_PROPERTY(bool can_draw WRITE setCanDraw CONSTANT)
 public:
     AnnotationHandler();
 
@@ -17,10 +17,9 @@ public:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
-    void setupConnection();
     void setCanDraw(bool canDraw);
+    void setupConnection();
 
-    QPen m_pen;
     bool m_can_draw;
     QVector<QPointF> m_current_points;
     std::vector<std::shared_ptr<Annotation>> m_annotations;
