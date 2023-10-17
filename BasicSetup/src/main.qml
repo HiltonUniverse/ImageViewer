@@ -2,10 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import Qt.labs.platform
 import QtQuick.Layouts
-import QtQuick.Dialogs
-import Qt.labs.settings 1.0
-import QtQuick.Shapes 1.5
-
 
 ApplicationWindow
 {

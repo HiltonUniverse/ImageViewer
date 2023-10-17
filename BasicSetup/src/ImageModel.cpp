@@ -132,6 +132,11 @@ bool ImageModel::setData(const QModelIndex &index, const QVariant &value, int ro
             return false;
         case Roles::IMAGE_PATH:
         {
+            if(image == m_data_manager.getActiveImage())
+            {
+                return true;
+            }
+
             auto select_undo_redo = std::make_unique<SelectUndoRedo>( image,
                                                                  m_data_manager);
 
