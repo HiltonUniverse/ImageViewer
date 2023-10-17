@@ -4,6 +4,7 @@
 #include "AnnotationModel.h"
 #include "ImageModel.h"
 #include "AnnotationHandler.h"
+#include "ResetAnnotationHandler.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -25,9 +26,13 @@ public:
         engine.rootContext()->setContextProperty("cpp_annotation_model", m_annotation_model.get());
 
         engine.rootContext()->setContextProperty("cpp_datamanager", &data_manager);
+
+        m_reset_annotation_handler = std::make_shared<ResetAnnotationHandler>(data_manager);
+        engine.rootContext()->setContextProperty("cpp_reset_annotation_handler", m_reset_annotation_handler.get());
     }
 
 private:
     std::shared_ptr<AnnotationModel> m_annotation_model;
     std::shared_ptr<ImageModel> m_image_model;
+    std::shared_ptr<ResetAnnotationHandler> m_reset_annotation_handler;
 };

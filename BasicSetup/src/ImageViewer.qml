@@ -120,7 +120,7 @@ Rectangle
 
                 onClicked:
                 {
-                    console.warn("RESET ANNOTATIONS!");
+                    cpp_reset_annotation_handler.start()
                 }
             }
 
