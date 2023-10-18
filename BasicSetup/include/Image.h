@@ -66,7 +66,7 @@ public:
     }
 
     //-----------------------------------
-    std::vector<std::shared_ptr<Annotation>> getAnnotations()
+    std::vector<std::shared_ptr<Annotation>>& getAnnotations()
     {
         return m_annotations;
     }

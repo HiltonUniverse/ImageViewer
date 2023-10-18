@@ -5,6 +5,8 @@
 #include "Annotation.h"
 
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonArray>
 
 class AnnotationSerializable : public Serializable
 {
@@ -26,6 +28,8 @@ public:
     //-----------------------------------
     QJsonDocument toJson() override
     {
+        auto& images = m_datamanager.getImages();
+
     }
 
 private:

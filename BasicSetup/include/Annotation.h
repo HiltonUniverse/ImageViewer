@@ -44,26 +44,36 @@ public:
     }
 
     //-----------------------------------
+    void setId(const QString& id)
+    {
+        m_id = id;
+    }
+
+    //-----------------------------------
     QVector<QPointF> getPoints() const
     {
         return m_points;
     }
 
+    //-----------------------------------
     void setColor(const QString& color)
     {
         m_color = color;
     }
 
+    //-----------------------------------
     QString getColor() const
     {
         return m_color;
     }
 
+    //-----------------------------------
     bool isSelected() const
     {
         return m_is_selected;
     }
 
+    //-----------------------------------
     void setSelected(bool selected)
     {
         m_is_selected = selected;
