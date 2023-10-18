@@ -11,70 +11,82 @@
 
 namespace
 {
-    //-----------------------------------
-    std::vector<std::shared_ptr<Annotation>> convertArrayToAnnotation(QJsonArray&& jsonArray)
+//-----------------------------------
+std::vector<std::shared_ptr<Annotation>> convertArrayToAnnotation(QJsonArray&& jsonArray)
+{
+    if(jsonArray.isEmpty())
     {
-        if(jsonArray.isEmpty())
-        {
-            return {};
-        }
-
-        std::vector<std::shared_ptr<Annotation>> annotations;
-        for(auto&& jsonObj : jsonArray)
-        {
-            const auto json_object = jsonObj.toObject();
-            const QString& id = json_object["id"].toString();
-            const QString& parent_id = json_object["parent_id"].toString();
-            const QString& color = json_object["color"].toString();
-            const auto& points_arry = json_object["points"].toArray();
-
-            QVector<QPointF> points;
-            for(auto point_array : points_arry)
-            {
-                auto point_obj = point_array.toObject();
-                QPointF point;
-                point.setX(point_obj["x"].toDouble());
-                point.setY(point_obj["y"].toDouble());
-                points.push_back(point);
-            }
-
-            auto annotation = std::make_shared<Annotation>(points, parent_id, color);
-            annotation->setId(id);
-            annotations.push_back(annotation);
-        }
-
-        return annotations;
+        return {};
     }
 
-    //-----------------------------------
-    QJsonArray convertAnnotationToArray(std::vector<std::shared_ptr<Annotation>>& annotations)
+    std::vector<std::shared_ptr<Annotation>> annotations;
+    for(auto&& jsonObj : jsonArray)
     {
-        QJsonArray annotation_array;
+        const auto json_object = jsonObj.toObject();
+        const QString& id = json_object["id"].toString();
+        const QString& parent_id = json_object["parent_id"].toString();
+        const QString& color = json_object["color"].toString();
+        const auto& points_arry = json_object["points"].toArray();
 
-        for(auto& annotation : annotations)
+        QVector<QPointF> points;
+        for(auto point_array : points_arry)
         {
-            QJsonObject json_object;
-            json_object["id"] = annotation->getId();
-            json_object["parent_id"] = annotation->getParentId();
-            json_object["color"] = annotation->getColor();
-
-            auto points = annotation->getPoints();
-            QJsonArray points_array;
-            for(auto& point : points)
-            {
-                QJsonObject object;
-                object["x"] = point.x();
-                object["y"] = point.y();
-                points_array.append(object);
-            }
-
-            json_object["points"] = points_array;
-
-            annotation_array.append(json_object);
+            auto point_obj = point_array.toObject();
+            QPointF point;
+            point.setX(point_obj["x"].toDouble());
+            point.setY(point_obj["y"].toDouble());
+            points.push_back(point);
         }
 
-        return annotation_array;
+        QPainterPath painter_path;
+        if(!points.empty())
+        {
+            painter_path.moveTo(points[0]);
+            for(auto& pt : points)
+            {
+                painter_path.lineTo(pt);
+            }
+        }
+
+        auto annotation = std::make_shared<Annotation>(painter_path, parent_id, color);
+        annotation->setId(id);
+        annotations.push_back(annotation);
     }
+
+    return annotations;
+}
+
+//-----------------------------------
+QJsonArray convertAnnotationToArray(std::vector<std::shared_ptr<Annotation>>& annotations)
+{
+    QJsonArray annotation_array;
+
+    for(auto& annotation : annotations)
+    {
+        QJsonObject json_object;
+        json_object["id"] = annotation->getId();
+        json_object["parent_id"] = annotation->getParentId();
+        json_object["color"] = annotation->getColor();
+
+        auto painter_path = annotation->getPainterPath();
+        QJsonArray points_array;
+        for(int i = 0; i < painter_path.elementCount(); ++i)
+        {
+            const auto element = painter_path.elementAt(i);
+            QJsonObject object;
+            object["x"] = element.x;
+            object["y"] = element.y;
+
+            points_array.append(object);
+        }
+
+        json_object["points"] = points_array;
+
+        annotation_array.append(json_object);
+    }
+
+    return annotation_array;
+}
 }
 
 class ImageSerializer : public Serializable

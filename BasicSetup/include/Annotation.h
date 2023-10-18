@@ -1,17 +1,19 @@
 #pragma once
 
 #include <QString>
-#include <QPointF>
+#include <QPainterPath>
 #include <QVector>
+#include <QGraphicsItem>
 
 class Annotation
 {
 public:
     //-----------------------------------
-    Annotation(const QVector<QPointF>& points,
+    Annotation(const QPainterPath& path,
                const QString& parentId,
-               const QString& color)
-        : m_points(points)
+               const QString& color,
+               QGraphicsItem* parent = nullptr)
+        : m_painter_path(path)
         , m_parent_id(parentId)
         , m_color(color)
         , m_is_selected(false)
@@ -42,6 +44,12 @@ public:
     void setId(const QString& id)
     {
         m_id = id;
+    }
+
+    //-----------------------------------
+    QPainterPath getPainterPath()
+    {
+        return m_painter_path;
     }
 
     //-----------------------------------
@@ -78,6 +86,7 @@ private:
     inline static int m_annotation_count = 0;
 
     QVector<QPointF> m_points;
+    QPainterPath m_painter_path;
     QString m_id;
     QString m_parent_id;
     QString m_color;
