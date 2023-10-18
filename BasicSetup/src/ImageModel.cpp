@@ -9,14 +9,14 @@
 ImageModel::ImageModel(DataManagerImpl& dataManager)
     : m_data_manager(dataManager)
 {
-    //loadModel();
+    loadModel();
     setupConnection();
 }
 
 //-----------------------------------
 void ImageModel::loadModel()
 {
-    auto images = m_data_manager.getImages();
+    auto& images = m_data_manager.getImages();
 
     for(auto& image : images)
     {
@@ -61,6 +61,13 @@ void ImageModel::setupConnection()
         auto model_index = getIndex(m_data_manager.getActiveImage());
         emit dataChanged(model_index, model_index, {ImageModel::Roles::HAS_ANNOTATIONS});
     });
+
+    connect(&m_data_manager, &DataManagerImpl::imageAdded, [this]([[maybe_unused]]auto image)
+    {
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        m_images.push_back(image);
+        endInsertRows();
+    });
 }
 
 //-----------------------------------
@@ -82,7 +89,7 @@ QModelIndex ImageModel::getIndex(std::shared_ptr<Image> img)
 }
 
 //-----------------------------------
-int ImageModel::rowCount([[maybe_unused]]const QModelIndex &parent) const
+int ImageModel::rowCount([[maybe_unused]]const QModelIndex &/*parent*/) const
 {
     return static_cast<int>(m_images.size());
 }
@@ -179,12 +186,12 @@ void ImageModel::loadFromFolder(const QString &path)
     QStringList name_list = directory.entryList(QDir::Files);
 
     beginResetModel();
-
+    m_images.clear();
+    m_data_manager.removeImages();
     for(auto &name : name_list)
     {
         const QString path = directory.absoluteFilePath(name).prepend("file://");
         auto image = std::make_shared<Image>(name, path);
-        m_images.push_back(image);
         m_data_manager.addImage(image);
     }
 
@@ -196,10 +203,11 @@ void ImageModel::loadDraggedDroppedImages(const QList<QUrl> &paths)
 {
     beginResetModel();
 
+    m_images.clear();
+    m_data_manager.removeImages();
     for(const QUrl& path : paths)
     {
         auto image = std::make_shared<Image>(path.fileName(), path.toDisplayString());
-        m_images.push_back(image);
         m_data_manager.addImage(image);
     }
 

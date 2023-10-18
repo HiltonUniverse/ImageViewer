@@ -30,7 +30,7 @@ ToolBar
             icon.name: "edit-save"
             icon.source: "file:///Users/Hilton/Desktop/save.svg"
             shortcut: StandardKey.Save
-            onTriggered: console.warn("SAVE!")
+            onTriggered: cpp_save_handler.start()
         }
 
         ToolButton

@@ -1,10 +1,12 @@
 #pragma once
 
+#include "DataObject.h"
+
 #include <QString>
 #include <QPointF>
 #include <QVector>
 
-class Annotation
+class Annotation : public DataObject
 {
 public:
     //-----------------------------------
@@ -21,7 +23,7 @@ public:
     }
 
     //-----------------------------------
-    ~Annotation() = default;
+    ~Annotation() override = default;
 
     //-----------------------------------
     QString getNotification()

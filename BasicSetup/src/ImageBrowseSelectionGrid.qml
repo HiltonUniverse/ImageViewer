@@ -16,11 +16,48 @@ Rectangle
 
         anchors.margins: 12
 
-        BrowseImage
+        RowLayout
         {
-            onBrowseAccepted: function(selectedFolder)
+            BrowseImage
             {
-                cpp_image_model.loadFromFolder(selectedFolder)
+                onBrowseAccepted: function(selectedFolder)
+                {
+                    cpp_image_model.loadFromFolder(selectedFolder)
+                }
+            }
+
+            //Load
+            Rectangle
+            {
+                objectName: "loadFile"
+
+                Layout.preferredWidth: 40
+                Layout.preferredHeight: 20
+                color: browse_mouse_area.containsMouse ? "#67686a"
+                                                       : "#6f7073"
+                border.color: "#6f7073"
+                radius: 3
+
+                Text
+                {
+                    anchors.centerIn: parent
+
+                    text: qsTr("Load")
+                    color: "#FFFFFF"
+                }
+
+                MouseArea
+                {
+                    id: browse_mouse_area
+
+                    anchors.fill: parent
+                    hoverEnabled: true
+
+                    onClicked:
+                    {
+                        cpp_load_handler.start()
+                    }
+                }
             }
         }
 

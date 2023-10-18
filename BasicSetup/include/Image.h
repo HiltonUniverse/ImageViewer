@@ -1,12 +1,13 @@
 #pragma once
 
 #include "Annotation.h"
+#include "DataObject.h"
 
 #include <QString>
 
 #include <vector>
 
-class Image
+class Image : public DataObject
 {
 public:
     //-----------------------------------
@@ -20,12 +21,24 @@ public:
     }
 
     //-----------------------------------
-    ~Image() = default;
+    ~Image() override = default;
 
     //-----------------------------------
     QString getId()
     {
         return m_id;
+    }
+
+    //-----------------------------------
+    void setId(const QString& id)
+    {
+        m_id = id;
+    }
+
+    //-----------------------------------
+    QString getName()
+    {
+        return m_name;
     }
 
     //-----------------------------------

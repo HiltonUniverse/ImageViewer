@@ -41,6 +41,14 @@ public:
         {
             setActiveImage(image);
         }
+
+        emit imageAdded(image);
+    }
+
+    //-----------------------------------
+    void removeImages()
+    {
+        m_images.clear();
     }
 
     //-----------------------------------
@@ -64,7 +72,7 @@ public:
     }
 
     //-----------------------------------
-    std::vector<std::shared_ptr<Image>> getImages()
+    std::vector<std::shared_ptr<Image>>& getImages()
     {
         return m_images;
     }
@@ -111,6 +119,7 @@ signals:
     void activeImageChanged(std::shared_ptr<Image> image);
     void annotationAdded(std::shared_ptr<Annotation> annotation);
     void annotationRemoved(std::shared_ptr<Annotation> annotation);
+    void imageAdded(std::shared_ptr<Image> image);
 
 private:
     std::vector<std::shared_ptr<Image>> m_images;
