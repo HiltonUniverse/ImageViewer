@@ -70,6 +70,20 @@ RowLayout
                     smart_panel.visible = !smart_panel.visible;
                 }
             }
+
+            ToolTip
+            {
+                visible: show_hide_smartpanel_area.containsMouse
+                text: smart_panel.visible? qsTr("Hide")
+                                         : qsTr("Show")
+
+                background: Rectangle
+                {
+                    color: Qt.rgba(0.74, 0.74, 0.74, 0.7)
+                    anchors.fill: parent
+                    radius: 2
+                }
+            }
         }
     }
 

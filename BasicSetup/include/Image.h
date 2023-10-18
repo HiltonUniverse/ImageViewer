@@ -73,7 +73,7 @@ public:
 
     //-----------------------------------
     void setSelected(bool value)
-    {
+    {        
         m_is_selected = value;
     }
 
@@ -82,6 +82,7 @@ public:
     {
         return m_is_selected;
     }
+
 private:
     inline static int m_image_count = 0;
 

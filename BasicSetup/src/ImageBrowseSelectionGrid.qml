@@ -31,7 +31,7 @@ Rectangle
             {
                 objectName: "loadFile"
 
-                Layout.preferredWidth: 40
+                Layout.preferredWidth: 75
                 Layout.preferredHeight: 20
                 color: browse_mouse_area.containsMouse ? "#67686a"
                                                        : "#6f7073"
@@ -42,7 +42,7 @@ Rectangle
                 {
                     anchors.centerIn: parent
 
-                    text: qsTr("Load")
+                    text: qsTr("Last Saved")
                     color: "#FFFFFF"
                 }
 

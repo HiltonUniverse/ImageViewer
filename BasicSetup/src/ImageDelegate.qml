@@ -27,9 +27,16 @@ Rectangle
         id: annotation_symbol
         anchors.right: parent.right
         anchors.top: parent.top
-        height: 10
-        width: 10
-        color: "red"
+        anchors.margins: 10
+        height: 15
+        width: 15
+        color: "transparent"
+        Image
+        {
+            anchors.fill: parent
+            source: "file:///Users/Hilton/Desktop/annotation.svg"
+            fillMode: Image.PreserveAspectFit
+        }
 
         visible: has_annotations
     }

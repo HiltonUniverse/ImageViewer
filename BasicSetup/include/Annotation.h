@@ -1,12 +1,10 @@
 #pragma once
 
-#include "DataObject.h"
-
 #include <QString>
 #include <QPointF>
 #include <QVector>
 
-class Annotation : public DataObject
+class Annotation
 {
 public:
     //-----------------------------------
@@ -21,9 +19,6 @@ public:
         ++m_annotation_count;
         m_id = QString::number(m_annotation_count);
     }
-
-    //-----------------------------------
-    ~Annotation() override = default;
 
     //-----------------------------------
     QString getNotification()
