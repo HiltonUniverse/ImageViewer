@@ -25,11 +25,27 @@ namespace
         QPainterPath strokepath = stroker.createStroke(path);
         return strokepath.contains(p);
     }
+
+    //-----------------------------------
+    QPainterPath convertPointsToPainterPath(QVector<QPointF>& points)
+    {
+        QPainterPath path;
+        //we first move our path to where the first point starts
+        //otherwise it always starts at (0,0), drawing a line from (0,0) to the first point of points vector.
+        path.moveTo(points.front());
+
+        for(auto& p : points)
+        {
+            path.lineTo(p);
+        }
+
+        return path;
+    }
 }
 
 //-----------------------------------
 AnnotationHandler::AnnotationHandler()
-    : m_can_draw(false)
+    : m_current_state(AnnotationState::NONE)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
@@ -82,16 +98,16 @@ void AnnotationHandler::changed(Annotation *type, const AnnotationEvent::EventTy
 {
     switch(evenType)
     {
-        case AnnotationEvent::EventType::ANNOTATION_SELECTED:
+    case AnnotationEvent::EventType::ANNOTATION_SELECTED:
+    {
+        if(type->isSelected())
         {
-            if(type->isSelected())
-            {
-                setFocus(true);
-            }
-            break;
+            setFocus(true);
         }
-        case AnnotationEvent::EventType::ANNOTATION_HOVERED:
-            break;
+        break;
+    }
+    case AnnotationEvent::EventType::ANNOTATION_HOVERED:
+        break;
     }
 
     update();
@@ -154,69 +170,132 @@ void AnnotationHandler::paint(QPainter *painter)
     }
 }
 
+
+//-----------------------------------
+void AnnotationHandler::handleAnnotationSelection(QMouseEvent *event)
+{
+    for(auto& annotation : m_annotations)
+    {
+        //if we never enter this if case, the licked mouse position does not have an annotation under it
+        if(containsClick(annotation->getPainterPath(), event->pos()))
+        {
+            setFocus(true); //so we handle key events to delete annotations
+            annotation->setSelected(true);
+            m_initial_position = event->pos(); //This is the initial translation point if dragging happens
+            handleAnnotationStateChanged(AnnotationState::SELECTED);
+        }
+        else
+        {
+            annotation->setSelected(false);
+        }
+    }
+}
+
+//-----------------------------------
+void AnnotationHandler::setupToolTip(const QPointF& position)
+{
+    for(auto& annotation : m_annotations)
+    {
+        if(containsClick(annotation->getPainterPath(), position))
+        {
+            const QPointF point = mapToGlobal(position);
+            const QPoint final_point = {static_cast<int>(point.x()), static_cast<int>(point.y())};
+            QToolTip::showText(final_point, annotation->getId(),nullptr,QRect(), 1000);
+            annotation->setHovered(true);
+            return;
+        }
+        else
+        {
+            annotation->setHovered(false);
+        }
+    }
+}
+
 //-----------------------------------
 void AnnotationHandler::mousePressEvent(QMouseEvent *event)
 {
-    //stop drawing action
     if (event->button() == Qt::RightButton)
     {
-        setCanDraw(false);
+        //stop drawing action
+        handleAnnotationStateChanged(AnnotationState::NONE);
         return;
     }
 
     if (event->button() == Qt::LeftButton)
     {
-        m_current_points.append(event->position());
+        handleAnnotationSelection(event);
 
-        for(auto& annotation : m_annotations)
+        if(m_current_state == AnnotationState::DRAWING)
         {
-            if(containsClick(annotation->getPainterPath(), event->pos()))
-            {
-                annotation->setSelected(true);
-                setFocus(true);
-            }
-            else
-            {
-                annotation->setSelected(false);
-            }
+            m_current_points.append(event->position());
+        }
+        update();
+    }
+}
+
+//-----------------------------------
+void AnnotationHandler::startAnnotationTranslation(QMouseEvent* event)
+{
+    for(auto& annotation : m_annotations)
+    {
+        if(annotation->isSelected())
+        {
+            handleAnnotationStateChanged(AnnotationState::TRANSLATION_STARTED);
+
+            auto& painter_path = annotation->getPainterPath();
+            const auto delta = event->position() - m_initial_position;
+            painter_path.translate(delta);
+            //we update the drag_initial_mouse_position after every update to prevent delta accumulation
+            //Otherwise the delta will cause large translation
+            m_initial_position = event->position();
+            update();
         }
     }
+}
 
-    update();
+//-----------------------------------
+void AnnotationHandler::endAnnotationTranslation()
+{
+    m_initial_position = QPointF{};
+    handleAnnotationStateChanged(AnnotationState::TRANSLATION_ENDED);
 }
 
 //-----------------------------------
 void AnnotationHandler::mouseMoveEvent(QMouseEvent *event)
 {
-    if(!m_can_draw)
+    if(m_current_state == AnnotationState::DRAWING)
     {
-        return;
+        m_current_points.append(event->position());
+    }
+    else
+    {
+        startAnnotationTranslation(event);
     }
 
-    m_current_points.append(event->position());
     update();
 }
 
 //-----------------------------------
 void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(!m_can_draw || m_current_points.size() == 1)
+    if(m_current_state == AnnotationState::TRANSLATION_STARTED)
     {
-        m_current_points.clear();
-        return;
+        handleAnnotationStateChanged(AnnotationState::TRANSLATION_ENDED);
     }
 
-    if(event->button() == Qt::LeftButton)
+    if(m_current_state == AnnotationState::DRAWING && event->button() == Qt::LeftButton)
     {
-        auto& data_manager = DataManager::instance();
-        QPainterPath path;
-        path.moveTo(m_current_points.front());
-        for(auto& p : m_current_points)
+        //No point in drawing if there is just one point, it's basically noise
+        if(m_current_points.size() == 1)
         {
-            path.lineTo(p);
+            m_current_points.clear();
+            return;
         }
 
-        auto new_annotation = std::make_shared<Annotation>(path,
+        auto painter_path = convertPointsToPainterPath(m_current_points);
+
+        auto& data_manager = getDataManager();
+        auto new_annotation = std::make_shared<Annotation>(painter_path,
                                                            data_manager.getActiveImage()->getId(),
                                                            m_pen_color);
 
@@ -232,27 +311,8 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
 //-----------------------------------
 void AnnotationHandler::hoverMoveEvent(QHoverEvent *event)
 {
-    for(auto& annotation : m_annotations)
-    {
-        if(containsClick(annotation->getPainterPath(), event->position()))
-        {
-            QPointF point = mapToGlobal(event->position());
-            QPoint final_point = {static_cast<int>(point.x()), static_cast<int>(point.y())};
-            QToolTip::showText(final_point, annotation->getId(),nullptr,QRect(), 1000);
-            annotation->setHovered(true);
-            update();
-        }
-        else
-        {
-            annotation->setHovered(false);
-            update();
-        }
-    }
-}
-
-//-----------------------------------
-void AnnotationHandler::dragMoveEvent(QDragMoveEvent *event)
-{
+    setupToolTip(event->position());
+    update();
 }
 
 //-----------------------------------
@@ -279,16 +339,48 @@ void AnnotationHandler::setPenColor(const QString &penColor)
 }
 
 //-----------------------------------
+void AnnotationHandler::updateCursorShape()
+{
+    switch(m_current_state)
+    {
+        case AnnotationState::NONE:
+        case AnnotationState::SELECTED:
+        case AnnotationState::TRANSLATION_ENDED:
+        {
+            setCursor(QCursor(Qt::ArrowCursor));
+            return;
+        }
+        case AnnotationState::DRAWING:
+        {
+            setCursor(QCursor(Qt::CrossCursor));
+            return;
+        }
+        case AnnotationState::TRANSLATION_STARTED:
+        {
+            setCursor(QCursor(Qt::SizeAllCursor));
+            return;
+        }
+    }
+}
+
+//-----------------------------------
+void AnnotationHandler::handleAnnotationStateChanged(AnnotationState&& state)
+{
+    m_current_state = state;
+    updateCursorShape();
+}
+
+//-----------------------------------
 void AnnotationHandler::setCanDraw(bool canDraw)
 {
-    m_can_draw = canDraw;
-
-    if(m_can_draw)
+    if(canDraw)
     {
-        setCursor(QCursor(Qt::CrossCursor));
+        m_current_state = AnnotationState::DRAWING;
     }
     else
     {
-        setCursor(QCursor(Qt::ArrowCursor));
+        m_current_state = AnnotationState::NONE;
     }
+
+    updateCursorShape();
 }

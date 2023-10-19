@@ -48,9 +48,15 @@ public:
     }
 
     //-----------------------------------
-    QPainterPath getPainterPath()
+    QPainterPath& getPainterPath()
     {
         return m_painter_path;
+    }
+
+    //-----------------------------------
+    void setPainterPath(QPainterPath&& path)
+    {
+        m_painter_path = path;
     }
 
     //-----------------------------------
