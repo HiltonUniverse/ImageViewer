@@ -105,6 +105,7 @@ void AnnotationHandler::changed(Annotation *type, const AnnotationEvent::EventTy
             {
                 setFocus(true);
             }
+            update();
             return;
         }
 
@@ -174,6 +175,12 @@ void AnnotationHandler::paint(QPainter *painter)
 
         painter->drawLine(first, second);
     }
+
+    QPainterPath painter_path_rect;
+    QPen pathPen(QColor(Qt::white),3);
+    painter_path_rect.addText({300,50},QFont("Helvetica", 40),"HELLO WORLD");
+    painter->setPen(pathPen);
+    painter->drawPath(painter_path_rect);
 }
 
 
@@ -366,6 +373,11 @@ void AnnotationHandler::updateCursorShape()
             setCursor(QCursor(Qt::SizeAllCursor));
             return;
         }
+        case AnnotationState::ADDING_TEXT:
+        {
+            setCursor(QCursor(Qt::IBeamCursor));
+            return;
+        }
     }
 }
 
@@ -379,9 +391,36 @@ void AnnotationHandler::handleAnnotationStateChanged(AnnotationState&& state)
 //-----------------------------------
 void AnnotationHandler::setCanDraw(bool canDraw)
 {
+    if(!getDataManager().getActiveImage())
+    {
+        qWarning() << "Upload/Select an image to start drawing!";
+        return;
+    }
+
     if(canDraw)
     {
         m_current_state = AnnotationState::DRAWING;
+    }
+    else
+    {
+        m_current_state = AnnotationState::NONE;
+    }
+
+    updateCursorShape();
+}
+
+//-----------------------------------
+void AnnotationHandler::setCanAddText(bool canAddText)
+{
+    if(!getDataManager().getActiveImage())
+    {
+        qWarning() << "Upload/Select an image to start adding text!";
+        return;
+    }
+
+    if(canAddText)
+    {
+        m_current_state = AnnotationState::ADDING_TEXT;
     }
     else
     {

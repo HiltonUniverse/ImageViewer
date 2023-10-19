@@ -10,6 +10,7 @@ Rectangle
     color: "#828282"
 
     signal freeHandStarted
+    signal addTextStarted
     signal colorPenSelected(var color)
     RowLayout
     {
@@ -89,6 +90,48 @@ Rectangle
             {
                 visible: freeHandlDrawingButton.hovered
                 text: qsTr("Free hand drawing")
+
+                background: Rectangle
+                {
+                    color: Qt.rgba(0.74, 0.74, 0.74, 0.7)
+                    anchors.fill: parent
+                    radius: 2
+                }
+            }
+        }
+
+        ToolSeparator
+        {
+            implicitHeight: 20
+            implicitWidth: 10
+        }
+
+        //Add text
+        Action
+        {
+            id: addTextAction
+            icon.name: "edit-freehand"
+            icon.source: "file:///Users/Hilton/Desktop/add_text.svg"
+            onTriggered: addTextStarted()
+        }
+
+        ToolButton
+        {
+            id: addTextButton
+            action: addTextAction
+
+            background: Rectangle
+            {
+                width: parent.width
+                height: parent.height
+                color: addTextButton.hovered ? "#b7b7b7" : "transparent"
+                radius: 2
+            }
+
+            ToolTip
+            {
+                visible: addTextButton.hovered
+                text: qsTr("Add text")
 
                 background: Rectangle
                 {

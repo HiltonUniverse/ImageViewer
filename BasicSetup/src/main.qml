@@ -47,10 +47,11 @@ ApplicationWindow
 
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? 30 : 0
-            onFreeHandStarted: split_viewer.drawing_canvas.can_draw = true
-            onColorPenSelected: function (color)
+            onFreeHandStarted: split_viewer.drawing_canvas.setCanDraw(true)
+            onAddTextStarted: split_viewer.drawing_canvas.setCanAddText(true)
+            onColorPenSelected: function(color)
             {
-                split_viewer.drawing_canvas.pen_color = color;
+                split_viewer.drawing_canvas.setPenColor(color)
             }
         }
 

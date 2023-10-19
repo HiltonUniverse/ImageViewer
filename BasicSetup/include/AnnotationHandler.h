@@ -9,8 +9,6 @@
 class AnnotationHandler : public QQuickPaintedItem, public pattern::Observer<Annotation, AnnotationEvent::EventType>
 {
     Q_OBJECT
-    Q_PROPERTY(bool can_draw WRITE setCanDraw CONSTANT)
-    Q_PROPERTY(QString pen_color WRITE setPenColor CONSTANT)
 public:
     enum class AnnotationState
     {
@@ -18,7 +16,8 @@ public:
         DRAWING,
         TRANSLATION_STARTED,
         TRANSLATION_ENDED,
-        SELECTED
+        SELECTED,
+        ADDING_TEXT
     };
 
     AnnotationHandler();
@@ -30,9 +29,11 @@ public:
     void hoverMoveEvent(QHoverEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
 
+    Q_INVOKABLE void setPenColor(const QString& penColor);
+    Q_INVOKABLE void setCanDraw(bool canDraw);
+    Q_INVOKABLE void setCanAddText(bool canAddText);
+
 private:
-    void setPenColor(const QString& penColor);
-    void setCanDraw(bool canDraw);
     void setupConnection();
     void startAnnotationTranslation(QMouseEvent *event);
     void endAnnotationTranslation();
@@ -47,7 +48,6 @@ private:
 
     void changed(Annotation* type, const AnnotationEvent::EventType& evenType) override;
 
-    bool m_can_draw;
     QString m_pen_color;
     QPointF m_initial_position;
     QPainterPath m_original_path;
