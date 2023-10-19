@@ -109,9 +109,9 @@ void AnnotationModel::changed(Annotation* type, const AnnotationEvent::EventType
     {
         case AnnotationEvent::EventType::ANNOTATION_SELECTED:
         {
-            if(type->isSelected())
+           if(type->isSelected())
             {
-                m_currently_selected = type;
+               m_currently_selected = type;
             }
 
             int index = getIndex(type);
@@ -152,6 +152,7 @@ void AnnotationModel::addAnnotationAndAttachObserver(std::shared_ptr<Annotation>
     beginInsertRows(QModelIndex(), this->rowCount(), this->rowCount());
 
     annotation->attach(this);
+
     m_annotations.push_back(annotation);
 
     endInsertRows();

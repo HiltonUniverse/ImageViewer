@@ -7,12 +7,16 @@
 #include "ResetAnnotationHandler.h"
 #include "SaveHandler.h"
 #include "LoadHandler.h"
+#include "DeleteHandler.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-class StartupHandler
+#include <QObject>
+
+class StartupHandler : public QObject
 {
+    Q_OBJECT
 public:
     //-----------------------------------
     StartupHandler(QQmlApplicationEngine& engine)
@@ -37,6 +41,8 @@ public:
 
         m_load_handler = std::make_shared<LoadHandler>(data_manager);
         engine.rootContext()->setContextProperty("cpp_load_handler", m_load_handler.get());
+
+        m_delete_handler = std::make_shared<DeleteHandler>(data_manager);
     }
 
 private:
@@ -45,4 +51,5 @@ private:
     std::shared_ptr<ResetAnnotationHandler> m_reset_annotation_handler;
     std::shared_ptr<SaveHandler> m_save_handler;
     std::shared_ptr<LoadHandler> m_load_handler;
+    std::shared_ptr<DeleteHandler> m_delete_handler;
 };

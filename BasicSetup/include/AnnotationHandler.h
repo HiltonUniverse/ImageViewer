@@ -19,6 +19,8 @@ public:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void hoverMoveEvent(QHoverEvent *event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void keyPressEvent(QKeyEvent *event) override;
 
 private:
     void setPenColor(const QString& penColor);

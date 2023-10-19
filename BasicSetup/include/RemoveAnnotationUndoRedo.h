@@ -5,11 +5,11 @@
 
 #include <QUndoCommand>
 
-class AnnotationUndoRedo : public QUndoCommand
+class RemoveAnnotationUndoRedo : public QUndoCommand
 {
 public:
-    AnnotationUndoRedo( std::shared_ptr<Annotation> annotation
-                        , DataManagerImpl& datamanager)
+    RemoveAnnotationUndoRedo( std::shared_ptr<Annotation> annotation
+                              , DataManagerImpl& datamanager)
         : m_annotation(annotation)
         , m_datamanager(datamanager)
     {
@@ -19,14 +19,18 @@ public:
     void undo() override
     {
         QUndoCommand::undo();
-        m_datamanager.removeAnnotation(m_annotation);
+
+        m_datamanager.addAnnotation(m_annotation);
     }
 
     //-----------------------------------
     void redo() override
     {
         QUndoCommand::redo();
-        m_datamanager.addAnnotation(m_annotation);
+
+        m_annotation->setHovered(false);
+        m_annotation->setSelected(false);
+        m_datamanager.removeAnnotation(m_annotation);
     }
 
 private:

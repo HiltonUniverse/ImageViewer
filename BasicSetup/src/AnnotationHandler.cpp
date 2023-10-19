@@ -1,5 +1,6 @@
 #include "AnnotationHandler.h"
-#include "AnnotationUndoRedo.h"
+#include "AddAnnotationUndoRedo.h"
+#include "RemoveAnnotationUndoRedo.h"
 #include "DataManager.h"
 
 #include <QCursor>
@@ -10,6 +11,12 @@
 
 namespace
 {
+    //-----------------------------------
+    auto& getDataManager()
+    {
+        return DataManager::instance();
+    }
+
     //-----------------------------------
     bool containsClick(const QPainterPath & path, const QPointF & p, qreal width=6.0)
     {
@@ -26,14 +33,14 @@ AnnotationHandler::AnnotationHandler()
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
-    setFlag(ItemAcceptsInputMethod, true);
+    setFlags({ItemAcceptsInputMethod, ItemHasContents, ItemIsFocusScope});
     setupConnection();
 }
 
 //-----------------------------------
 void AnnotationHandler::setupConnection()
 {
-    auto& data_manager = DataManager::instance();
+    auto& data_manager = getDataManager();
 
     connect(&data_manager, &DataManagerImpl::activeImageChanged, this, &AnnotationHandler::handleActiveImageChanged);
     connect(&data_manager, &DataManagerImpl::annotationAdded, this, &AnnotationHandler::handleAnnotationAdded);
@@ -73,6 +80,20 @@ void AnnotationHandler::handleAnnotationRemoved(std::shared_ptr<Annotation> anno
 //-----------------------------------
 void AnnotationHandler::changed(Annotation *type, const AnnotationEvent::EventType &evenType)
 {
+    switch(evenType)
+    {
+        case AnnotationEvent::EventType::ANNOTATION_SELECTED:
+        {
+            if(type->isSelected())
+            {
+                setFocus(true);
+            }
+            break;
+        }
+        case AnnotationEvent::EventType::ANNOTATION_HOVERED:
+            break;
+    }
+
     update();
 }
 
@@ -152,6 +173,7 @@ void AnnotationHandler::mousePressEvent(QMouseEvent *event)
             if(containsClick(annotation->getPainterPath(), event->pos()))
             {
                 annotation->setSelected(true);
+                setFocus(true);
             }
             else
             {
@@ -198,7 +220,7 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
                                                            data_manager.getActiveImage()->getId(),
                                                            m_pen_color);
 
-        auto command = new AnnotationUndoRedo(new_annotation, data_manager);
+        auto command = new AddAnnotationUndoRedo(new_annotation, data_manager);
         data_manager.m_undo_stack.push(command);
 
         m_current_points.clear();
@@ -224,6 +246,28 @@ void AnnotationHandler::hoverMoveEvent(QHoverEvent *event)
         {
             annotation->setHovered(false);
             update();
+        }
+    }
+}
+
+//-----------------------------------
+void AnnotationHandler::dragMoveEvent(QDragMoveEvent *event)
+{
+}
+
+//-----------------------------------
+void AnnotationHandler::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Backspace || event->key() == Qt::Key_Delete)
+    {
+        for(auto& annotation : m_annotations)
+        {
+            if(annotation && annotation->isSelected())
+            {
+                auto& data_manager = getDataManager();
+                auto remove_undo_command = std::make_unique<RemoveAnnotationUndoRedo>(annotation, data_manager);
+                data_manager.m_undo_stack.push(remove_undo_command.release());
+            }
         }
     }
 }
