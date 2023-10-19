@@ -54,9 +54,11 @@ public:
     }
 
     //-----------------------------------
-    void setPainterPath(QPainterPath&& path)
+    void setPainterPath(const QPainterPath& path)
     {
         m_painter_path = path;
+        AnnotationEvent::EventType event = AnnotationEvent::EventType::ANNOTATION_PATH_UPDATED;
+        notify(event);
     }
 
     //-----------------------------------

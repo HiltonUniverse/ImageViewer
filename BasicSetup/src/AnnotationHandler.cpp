@@ -1,6 +1,7 @@
 #include "AnnotationHandler.h"
 #include "AddAnnotationUndoRedo.h"
 #include "RemoveAnnotationUndoRedo.h"
+#include "AnnotationTranslationUndoRedo.h"
 #include "DataManager.h"
 
 #include <QCursor>
@@ -98,19 +99,24 @@ void AnnotationHandler::changed(Annotation *type, const AnnotationEvent::EventTy
 {
     switch(evenType)
     {
-    case AnnotationEvent::EventType::ANNOTATION_SELECTED:
-    {
-        if(type->isSelected())
+        case AnnotationEvent::EventType::ANNOTATION_SELECTED:
         {
-            setFocus(true);
+            if(type->isSelected())
+            {
+                setFocus(true);
+            }
+            return;
         }
-        break;
-    }
-    case AnnotationEvent::EventType::ANNOTATION_HOVERED:
-        break;
+
+        case AnnotationEvent::EventType::ANNOTATION_HOVERED:
+        case AnnotationEvent::EventType::ANNOTATION_PATH_UPDATED:
+        {
+            update();
+            return;
+        }
     }
 
-    update();
+    Q_UNREACHABLE();
 }
 
 //-----------------------------------
@@ -182,31 +188,12 @@ void AnnotationHandler::handleAnnotationSelection(QMouseEvent *event)
             setFocus(true); //so we handle key events to delete annotations
             annotation->setSelected(true);
             m_initial_position = event->pos(); //This is the initial translation point if dragging happens
+            m_original_path = annotation->getPainterPath();
             handleAnnotationStateChanged(AnnotationState::SELECTED);
         }
         else
         {
             annotation->setSelected(false);
-        }
-    }
-}
-
-//-----------------------------------
-void AnnotationHandler::setupToolTip(const QPointF& position)
-{
-    for(auto& annotation : m_annotations)
-    {
-        if(containsClick(annotation->getPainterPath(), position))
-        {
-            const QPointF point = mapToGlobal(position);
-            const QPoint final_point = {static_cast<int>(point.x()), static_cast<int>(point.y())};
-            QToolTip::showText(final_point, annotation->getId(),nullptr,QRect(), 1000);
-            annotation->setHovered(true);
-            return;
-        }
-        else
-        {
-            annotation->setHovered(false);
         }
     }
 }
@@ -248,16 +235,10 @@ void AnnotationHandler::startAnnotationTranslation(QMouseEvent* event)
             //we update the drag_initial_mouse_position after every update to prevent delta accumulation
             //Otherwise the delta will cause large translation
             m_initial_position = event->position();
+
             update();
         }
     }
-}
-
-//-----------------------------------
-void AnnotationHandler::endAnnotationTranslation()
-{
-    m_initial_position = QPointF{};
-    handleAnnotationStateChanged(AnnotationState::TRANSLATION_ENDED);
 }
 
 //-----------------------------------
@@ -269,7 +250,7 @@ void AnnotationHandler::mouseMoveEvent(QMouseEvent *event)
     }
     else
     {
-        startAnnotationTranslation(event);
+        startAnnotationTranslation(event); //possibly translating if not drawing
     }
 
     update();
@@ -280,6 +261,11 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
 {
     if(m_current_state == AnnotationState::TRANSLATION_STARTED)
     {
+        auto selected_annotation = getDataManager().getSelectedAnnotation();
+        auto translation_undoredo = std::make_unique<AnnotationTranslationUndoRedo>(m_original_path
+                                                                                    , selected_annotation);
+        getDataManager().m_undo_stack.push(translation_undoredo.release());
+
         handleAnnotationStateChanged(AnnotationState::TRANSLATION_ENDED);
     }
 
@@ -305,6 +291,26 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
         m_current_points.clear();
 
         update();
+    }
+}
+
+//-----------------------------------
+void AnnotationHandler::setupToolTip(const QPointF& position)
+{
+    for(auto& annotation : m_annotations)
+    {
+        if(containsClick(annotation->getPainterPath(), position))
+        {
+            const QPointF point = mapToGlobal(position);
+            const QPoint final_point = {static_cast<int>(point.x()), static_cast<int>(point.y())};
+            QToolTip::showText(final_point, annotation->getId(),nullptr,QRect(), 1000);
+            annotation->setHovered(true);
+            return;
+        }
+        else
+        {
+            annotation->setHovered(false);
+        }
     }
 }
 

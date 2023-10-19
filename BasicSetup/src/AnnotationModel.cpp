@@ -126,6 +126,8 @@ void AnnotationModel::changed(Annotation* type, const AnnotationEvent::EventType
             emit dataChanged(model_index, model_index, {Roles::ANNOTATION_HOVERED});
             return;
         }
+        case AnnotationEvent::EventType::ANNOTATION_PATH_UPDATED:
+            return;
     }
     Q_UNREACHABLE();
 }

@@ -50,6 +50,7 @@ private:
     bool m_can_draw;
     QString m_pen_color;
     QPointF m_initial_position;
+    QPainterPath m_original_path;
     QVector<QPointF> m_current_points;
     AnnotationState m_current_state;
     std::vector<std::shared_ptr<Annotation>> m_annotations;

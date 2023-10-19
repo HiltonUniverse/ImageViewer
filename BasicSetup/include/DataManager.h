@@ -37,6 +37,7 @@ public:
     void addImage(std::shared_ptr<Image> image)
     {
         m_images.push_back(image);
+
         if(m_images.size() == 1)
         {
             setActiveImage(image);
@@ -69,6 +70,25 @@ public:
             m_active_image->removeAnnotation(annotation);
             emit annotationRemoved(annotation);
         }
+    }
+
+    //-----------------------------------
+    std::shared_ptr<Annotation> getSelectedAnnotation() const
+    {
+        if(!m_active_image)
+        {
+            return nullptr;
+        }
+
+        for(auto& annotation : m_active_image->getAnnotations())
+        {
+            if(annotation->isSelected())
+            {
+                return annotation;
+            }
+        }
+
+        return nullptr;
     }
 
     //-----------------------------------
@@ -123,7 +143,6 @@ signals:
 
 private:
     std::vector<std::shared_ptr<Image>> m_images;
-    std::vector<std::shared_ptr<Annotation>> m_annotations;
 
     std::shared_ptr<Image> m_active_image;
 };
