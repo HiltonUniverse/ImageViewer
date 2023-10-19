@@ -2,14 +2,30 @@
 #include "AnnotationUndoRedo.h"
 #include "DataManager.h"
 
-#include <QPainter>
-#include <QMouseEvent>
 #include <QCursor>
+#include <QPainter>
+#include <QToolTip>
+#include <QMouseEvent>
+#include <QPainterPath>
+
+namespace
+{
+    //-----------------------------------
+    bool containsClick(const QPainterPath & path, const QPointF & p, qreal width=6.0)
+    {
+        QPainterPathStroker stroker;
+        stroker.setWidth(width);
+        QPainterPath strokepath = stroker.createStroke(path);
+        return strokepath.contains(p);
+    }
+}
 
 //-----------------------------------
 AnnotationHandler::AnnotationHandler()
     : m_can_draw(false)
 {
+    setAcceptHoverEvents(true);
+    setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
     setFlag(ItemAcceptsInputMethod, true);
     setupConnection();
 }
@@ -19,29 +35,45 @@ void AnnotationHandler::setupConnection()
 {
     auto& data_manager = DataManager::instance();
 
-    connect(&data_manager, &DataManagerImpl::activeImageChanged, [this](auto image)
+    connect(&data_manager, &DataManagerImpl::activeImageChanged, this, &AnnotationHandler::handleActiveImageChanged);
+    connect(&data_manager, &DataManagerImpl::annotationAdded, this, &AnnotationHandler::handleAnnotationAdded);
+    connect(&data_manager, &DataManagerImpl::annotationRemoved, this, &AnnotationHandler::handleAnnotationRemoved);
+}
+
+//-----------------------------------
+void AnnotationHandler::handleActiveImageChanged(std::shared_ptr<::Image> image)
+{
+    m_annotations.clear();
+
+    for(auto& annotation : image->getAnnotations())
     {
-        m_annotations.clear();
-
-        for(auto& annotation : image->getAnnotations())
-        {
-            m_annotations.push_back(annotation);
-        }
-
-        update();
-    });
-
-    connect(&data_manager, &DataManagerImpl::annotationAdded, [this](auto annotation)
-    {
+        annotation->attach(this);
         m_annotations.push_back(annotation);
-        update();
-    });
+    }
 
-    connect(&data_manager, &DataManagerImpl::annotationRemoved, [this](auto annotation)
-    {
-        m_annotations.erase(std::remove(m_annotations.begin(), m_annotations.end(), annotation), m_annotations.end());
-        update();
-    });
+    update();
+}
+
+//-----------------------------------
+void AnnotationHandler::handleAnnotationAdded(std::shared_ptr<Annotation> annotation)
+{
+    annotation->attach(this);
+    m_annotations.push_back(annotation);
+    update();
+}
+
+//-----------------------------------
+void AnnotationHandler::handleAnnotationRemoved(std::shared_ptr<Annotation> annotation)
+{
+    annotation->detach(this);
+    m_annotations.erase(std::remove(m_annotations.begin(), m_annotations.end(), annotation), m_annotations.end());
+    update();
+}
+
+//-----------------------------------
+void AnnotationHandler::changed(Annotation *type, const AnnotationEvent::EventType &evenType)
+{
+    update();
 }
 
 //-----------------------------------
@@ -52,17 +84,42 @@ void AnnotationHandler::paint(QPainter *painter)
     // Draw the previous path
     for (const auto& annotation : m_annotations)
     {
-        const auto& path = annotation->getPoints();
-        if (!path.isEmpty())
+        const auto& path = annotation->getPainterPath();
+        if (path.isEmpty())
         {
-            for (int i = 1; i < path.size(); ++i)
-            {
-                painter->setPen(QPen(QColor(annotation->getColor()), 5));
-                QPointF first = path[i - 1];
-                QPointF second = path[i];
-                painter->drawLine(first, second);
-            }
+            continue;
         }
+
+        //this is the highlighted boundary area when an item is selected
+        if(annotation->isSelected())
+        {
+            QPen borderPen((QColor(Qt::green)));
+            borderPen.setStyle(Qt::DashLine);
+
+            QPainterPathStroker stroker;
+            stroker.setWidth(7);
+            QPainterPath border_path= stroker.createStroke(path);
+
+            painter->setPen(borderPen);
+            painter->drawPath(border_path);
+        }
+        else if(annotation->isHovered())
+        {
+            QPen borderPen((QColor(Qt::white)));
+            borderPen.setStyle(Qt::DashLine);
+
+            QPainterPathStroker stroker;
+            stroker.setWidth(7);
+            QPainterPath hover_path = stroker.createStroke(annotation->getPainterPath());
+
+            painter->setPen(borderPen);
+            painter->drawPath(hover_path);
+        }
+
+        QPen pathPen(QColor(annotation->getColor()),5);
+        painter->setPen(pathPen);
+
+        painter->drawPath(path);
     }
 
     painter->setPen(QPen(QColor(m_pen_color), 5));
@@ -79,20 +136,31 @@ void AnnotationHandler::paint(QPainter *painter)
 //-----------------------------------
 void AnnotationHandler::mousePressEvent(QMouseEvent *event)
 {
-    if(!m_can_draw)
-    {
-        return;
-    }
-
     //stop drawing action
     if (event->button() == Qt::RightButton)
     {
         setCanDraw(false);
-        setAcceptedMouseButtons({Qt::NoButton});
         return;
     }
 
-    m_current_points.append(event->position()); // Start a new path
+    if (event->button() == Qt::LeftButton)
+    {
+        m_current_points.append(event->position());
+
+        for(auto& annotation : m_annotations)
+        {
+            if(containsClick(annotation->getPainterPath(), event->pos()))
+            {
+                annotation->setSelected(true);
+            }
+            else
+            {
+                annotation->setSelected(false);
+            }
+        }
+    }
+
+    update();
 }
 
 //-----------------------------------
@@ -119,15 +187,44 @@ void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton)
     {
         auto& data_manager = DataManager::instance();
-        auto new_annotation = std::make_shared<Annotation>(m_current_points,
+        QPainterPath path;
+        path.moveTo(m_current_points.front());
+        for(auto& p : m_current_points)
+        {
+            path.lineTo(p);
+        }
+
+        auto new_annotation = std::make_shared<Annotation>(path,
                                                            data_manager.getActiveImage()->getId(),
                                                            m_pen_color);
+
         auto command = new AnnotationUndoRedo(new_annotation, data_manager);
         data_manager.m_undo_stack.push(command);
 
         m_current_points.clear();
 
         update();
+    }
+}
+
+//-----------------------------------
+void AnnotationHandler::hoverMoveEvent(QHoverEvent *event)
+{
+    for(auto& annotation : m_annotations)
+    {
+        if(containsClick(annotation->getPainterPath(), event->position()))
+        {
+            QPointF point = mapToGlobal(event->position());
+            QPoint final_point = {static_cast<int>(point.x()), static_cast<int>(point.y())};
+            QToolTip::showText(final_point, annotation->getId(),nullptr,QRect(), 1000);
+            annotation->setHovered(true);
+            update();
+        }
+        else
+        {
+            annotation->setHovered(false);
+            update();
+        }
     }
 }
 
@@ -141,8 +238,6 @@ void AnnotationHandler::setPenColor(const QString &penColor)
 void AnnotationHandler::setCanDraw(bool canDraw)
 {
     m_can_draw = canDraw;
-
-    setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
 
     if(m_can_draw)
     {

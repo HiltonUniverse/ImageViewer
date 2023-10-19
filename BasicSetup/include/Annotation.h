@@ -1,31 +1,32 @@
 #pragma once
 
+#include "ObserverPattern.h"
+#include "AnnotationEvent.h"
+#include "UniqueKeyGenerator.h"
+
 #include <QString>
 #include <QPainterPath>
-#include <QVector>
-#include <QGraphicsItem>
 
-class Annotation
+class Annotation : public pattern::Observable<Annotation, AnnotationEvent::EventType>
 {
 public:
     //-----------------------------------
     Annotation(const QPainterPath& path,
                const QString& parentId,
-               const QString& color,
-               QGraphicsItem* parent = nullptr)
+               const QString& color)
         : m_painter_path(path)
+        , m_id(UniqueKeyGenerator::getUniqueKey())
         , m_parent_id(parentId)
         , m_color(color)
         , m_is_selected(false)
+        , m_is_hovered(false)
     {
-        ++m_annotation_count;
-        m_id = QString::number(m_annotation_count);
     }
 
     //-----------------------------------
     QString getNotification()
     {
-        return "It's Annotation";
+        return "Annotation";
     }
 
     //-----------------------------------
@@ -53,12 +54,6 @@ public:
     }
 
     //-----------------------------------
-    QVector<QPointF> getPoints() const
-    {
-        return m_points;
-    }
-
-    //-----------------------------------
     void setColor(const QString& color)
     {
         m_color = color;
@@ -80,15 +75,29 @@ public:
     void setSelected(bool selected)
     {
         m_is_selected = selected;
+        AnnotationEvent::EventType event = AnnotationEvent::EventType::ANNOTATION_SELECTED;
+        notify(event);
+    }
+
+    //-----------------------------------
+    void setHovered(bool hovered)
+    {
+        m_is_hovered = hovered;
+        AnnotationEvent::EventType event = AnnotationEvent::EventType::ANNOTATION_HOVERED;
+        notify(event);
+    }
+
+    //-----------------------------------
+    bool isHovered() const
+    {
+        return m_is_hovered;
     }
 
 private:
-    inline static int m_annotation_count = 0;
-
-    QVector<QPointF> m_points;
     QPainterPath m_painter_path;
     QString m_id;
     QString m_parent_id;
     QString m_color;
     bool m_is_selected;
+    bool m_is_hovered;
 };

@@ -157,19 +157,23 @@ RowLayout
                     id: list_view
 
                     implicitHeight: childrenRect.height
+                    spacing: 0
 
                     delegate: RowLayout
                     {
                         width: parent ? parent.width
                                       : 0
-
                         Rectangle
                         {
                             id: delegate_rect
 
-                            Layout.preferredWidth: 170
-                            Layout.preferredHeight: 30
-                            Layout.margins: 12
+                            Layout.preferredWidth: 180
+                            Layout.preferredHeight: 50
+
+                            Layout.leftMargin: 10
+                            Layout.rightMargin: 10
+                            Layout.topMargin: 5
+
                             Layout.alignment: Qt.AlignHCenter
                             color: "#666666"
                             border.color:
@@ -180,7 +184,7 @@ RowLayout
                                 }
                                 else
                                 {
-                                    delegate_area.containsMouse ? "#8c8c8c" : "#666666"
+                                    delegate_area.containsMouse || annotation_hovered ? "#8e8e8e" : "#666666"
                                 }
                             }
                             border.width: 2
@@ -192,10 +196,11 @@ RowLayout
 
                                 anchors.fill: parent
 
-                                verticalAlignment: Text.AlignVCenter
-                                horizontalAlignment: Text.AlignHCenter
+                                anchors.centerIn: parent
 
-                                text: annotation_id + ": " + annotation_notification
+                                verticalAlignment: Text.AlignVCenter
+
+                                text: annotation_notification + ": " + annotation_id
                                 wrapMode: Text.Wrap
                             }
 
@@ -207,6 +212,9 @@ RowLayout
                                 hoverEnabled: true
 
                                 onClicked: annotation_selected = !annotation_selected
+
+                                onEntered: annotation_hovered = true
+                                onExited: annotation_hovered = false
                             }
                         }
                     }

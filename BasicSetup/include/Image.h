@@ -2,6 +2,7 @@
 
 #include "Annotation.h"
 #include "DataObject.h"
+#include "UniqueKeyGenerator.h"
 
 #include <QString>
 
@@ -14,10 +15,9 @@ public:
     Image(const QString& name, const QString& path)
         : m_path(path)
         , m_name(name)
+        , m_id(UniqueKeyGenerator::getUniqueKey())
         , m_is_selected(false)
     {
-        ++m_image_count;
-        m_id = QString::number(m_image_count);
     }
 
     //-----------------------------------
@@ -84,8 +84,6 @@ public:
     }
 
 private:
-    inline static int m_image_count = 0;
-
     QString m_path;
     QString m_name;
     QString m_id;

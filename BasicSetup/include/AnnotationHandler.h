@@ -1,10 +1,12 @@
 #pragma once
+
 #include "Annotation.h"
+#include "Image.h"
 
 #include <QQuickPaintedItem>
 #include <QPen>
 
-class AnnotationHandler : public QQuickPaintedItem
+class AnnotationHandler : public QQuickPaintedItem, public pattern::Observer<Annotation, AnnotationEvent::EventType>
 {
     Q_OBJECT
     Q_PROPERTY(bool can_draw WRITE setCanDraw CONSTANT)
@@ -16,11 +18,18 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void hoverMoveEvent(QHoverEvent *event) override;
 
 private:
     void setPenColor(const QString& penColor);
     void setCanDraw(bool canDraw);
     void setupConnection();
+
+    void handleActiveImageChanged(std::shared_ptr<::Image> image);
+    void handleAnnotationAdded(std::shared_ptr<Annotation> annotation);
+    void handleAnnotationRemoved(std::shared_ptr<Annotation> annotation);
+
+    void changed(Annotation* type, const AnnotationEvent::EventType& evenType) override;
 
     bool m_can_draw;
     QString m_pen_color;
