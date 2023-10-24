@@ -22,5 +22,4 @@ qt_add_qml_module(${APP_NAME}
         src/BrowseImage.qml
 )
 
-target_link_libraries(${APP_NAME} PRIVATE Qt6::Quick Qt6::Widgets)
-
+target_link_libraries(${APP_NAME} PRIVATE Qt6::Quick Qt6::Widgets ${OpenCV_LIBS})
