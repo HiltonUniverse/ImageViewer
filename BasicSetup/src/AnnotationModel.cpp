@@ -180,6 +180,7 @@ void AnnotationModel::handleActiveImageChanged(std::shared_ptr<Image> activeImag
     for(auto& annotation : m_annotations)
     {
         annotation->detach(this);
+        annotation->setSelected(false);
     }
 
     m_annotations.clear();

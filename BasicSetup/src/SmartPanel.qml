@@ -187,6 +187,7 @@ RowLayout
                                     delegate_area.containsMouse || annotation_hovered ? "#8e8e8e" : "#666666"
                                 }
                             }
+
                             border.width: 2
                             radius: 3
 

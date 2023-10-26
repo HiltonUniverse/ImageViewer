@@ -6,8 +6,20 @@ Rectangle
 
     width: 245
     height: 200
-    border.color: is_image_selected ? "#29e817"
-                                    : "black"
+    border.color:
+    {
+        if(is_image_selected)
+        {
+            return "#29e817"
+        }
+        else
+        {
+            return delegate_are.containsMouse ? "#8e8e8e"
+                                              : "black"
+        }
+
+    }
+
     border.width: 2
     color: "black"
 
@@ -43,7 +55,11 @@ Rectangle
 
     MouseArea
     {
+        id: delegate_are
         anchors.fill: parent
+
+        hoverEnabled: true
+
         onClicked:
         {
             image_path = image_path

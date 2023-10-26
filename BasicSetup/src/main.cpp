@@ -1,7 +1,11 @@
+#include "StartupHandler.h"
+
 #include <QDebug>
 #include <QQmlApplicationEngine>
 #include <QApplication>
-#include "StartupHandler.h"
+
+#include <iostream>
+#include <opencv2/opencv.hpp>
 
 int main(int argc, char* argv[])
 {

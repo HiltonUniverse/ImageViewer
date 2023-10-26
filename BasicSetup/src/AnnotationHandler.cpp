@@ -175,12 +175,6 @@ void AnnotationHandler::paint(QPainter *painter)
 
         painter->drawLine(first, second);
     }
-
-    QPainterPath painter_path_rect;
-    QPen pathPen(QColor(Qt::white),3);
-    painter_path_rect.addText({300,50},QFont("Helvetica", 40),"HELLO WORLD");
-    painter->setPen(pathPen);
-    painter->drawPath(painter_path_rect);
 }
 
 
