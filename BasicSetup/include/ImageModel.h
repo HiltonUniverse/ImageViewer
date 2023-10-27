@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Annotation.h"
 #include "DataManager.h"
+
+#include "ImageProvider.h"
 
 #include <QAbstractListModel>
 #include <QObject>
@@ -10,6 +11,7 @@
 class ImageModel : public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(QString active_image_id READ getActiveImageId NOTIFY activeImageChanged)
 public:
     enum Roles
     {
@@ -34,12 +36,22 @@ public:
 
     Q_INVOKABLE void loadDraggedDroppedImages(const QList<QUrl>& paths);
 
+    ImageProvider* getImageProvider() const;
+
+signals:
+    void activeImageChanged();
 
 private:
     void loadModel();
+
+    void removeImages();
     QModelIndex getIndex(std::shared_ptr<Image> img);
+
+    QString getActiveImageId() const;
 
     std::vector<std::shared_ptr<Image>> m_images;
     DataManagerImpl& m_data_manager;
     void setupConnection();
+    //This must be a raw pointer as it's deleted by Qt itself later
+    ImageProvider* m_image_provider;
 };

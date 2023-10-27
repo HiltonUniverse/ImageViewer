@@ -209,8 +209,6 @@ void AnnotationHandler::mousePressEvent(QMouseEvent *event)
         return;
     }
 
-    qWarning() << "Mouse point: " << event->position();
-
     if (event->button() == Qt::LeftButton)
     {
         handleAnnotationSelection(event);

@@ -8,6 +8,7 @@
 //-----------------------------------
 ImageModel::ImageModel(DataManagerImpl& dataManager)
     : m_data_manager(dataManager)
+    , m_image_provider(new ImageProvider()) //deleted by engine.addImageProvider(..)
 {
     loadModel();
     setupConnection();
@@ -48,6 +49,11 @@ void ImageModel::setupConnection()
 
         auto model_index = getIndex(image);
         emit dataChanged(model_index, model_index, {ImageModel::Roles::IS_IMAGE_SELECTED});
+
+        //not the best solution!
+        m_image_provider->addImage(image->getId(), image->getImage());
+
+        emit activeImageChanged();
     });
 
     connect(&m_data_manager, &DataManagerImpl::annotationAdded, [this]([[maybe_unused]]auto annotation)
@@ -65,7 +71,10 @@ void ImageModel::setupConnection()
     connect(&m_data_manager, &DataManagerImpl::imageAdded, [this]([[maybe_unused]]auto image)
     {
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
+
         m_images.push_back(image);
+        m_image_provider->addImage(image->getId(), image->getImage());
+
         endInsertRows();
     });
 }
@@ -186,13 +195,12 @@ void ImageModel::loadFromFolder(const QString &path)
     QStringList name_list = directory.entryList(QDir::Files);
 
     beginResetModel();
-    m_images.clear();
-    m_data_manager.removeImages();
+
+    removeImages();
     for(auto &name : name_list)
     {
         const QString path = directory.absoluteFilePath(name).prepend("file://");
-        auto image = std::make_shared<Image>(name, path);
-        m_data_manager.addImage(image);
+        m_data_manager.addImage(std::make_shared<Image>(name, path));
     }
 
     endResetModel();
@@ -203,13 +211,36 @@ void ImageModel::loadDraggedDroppedImages(const QList<QUrl> &paths)
 {
     beginResetModel();
 
-    m_images.clear();
-    m_data_manager.removeImages();
+    removeImages();
     for(const QUrl& path : paths)
     {
-        auto image = std::make_shared<Image>(path.fileName(), path.toDisplayString());
-        m_data_manager.addImage(image);
+        m_data_manager.addImage(std::make_shared<Image>(path.fileName(), path.toDisplayString()));
     }
 
     endResetModel();
+}
+
+//-----------------------------------
+ImageProvider *ImageModel::getImageProvider() const
+{
+    return m_image_provider;
+}
+
+//-----------------------------------
+QString ImageModel::getActiveImageId() const
+{
+    auto active_image = m_data_manager.getActiveImage();
+    if(active_image)
+    {
+        return active_image->getId();
+    }
+
+    return "";
+}
+
+//-----------------------------------
+void ImageModel::removeImages()
+{
+    m_images.clear();
+    m_data_manager.removeImages();
 }

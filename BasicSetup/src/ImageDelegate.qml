@@ -30,7 +30,7 @@ Rectangle
         anchors.centerIn: parent
         width: parent.width - 15
         height: parent.height - 10
-        source: image_path
+        source: "image://cpp_image_provider/" + image_id
         fillMode: Image.PreserveAspectFit
     }
 

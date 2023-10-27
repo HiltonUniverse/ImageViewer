@@ -34,7 +34,8 @@ Rectangle
 
             fillMode: Image.PreserveAspectFit
             Layout.alignment: Qt.AlignCenter
-            source: cpp_datamanager ? cpp_datamanager.path : ""
+            source: cpp_image_model && (cpp_image_model.active_image_id != "")? "image://cpp_image_provider/" + cpp_image_model.active_image_id
+                                                                              : ""
         }
     }
 

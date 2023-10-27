@@ -10,7 +10,6 @@
 class DataManagerImpl : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString path READ imagePath NOTIFY activeImageChanged)
 public:
     //-----------------------------------
     void setActiveImage(std::shared_ptr<Image> image)
@@ -101,17 +100,6 @@ public:
     std::shared_ptr<Image> getActiveImage()
     {
         return m_active_image;
-    }
-
-    //-----------------------------------
-    QString imagePath() const
-    {
-        if(m_active_image)
-        {
-            return m_active_image->getPath();
-        }
-
-        return "";
     }
 
     //-----------------------------------

@@ -8,6 +8,7 @@
 #include "SaveHandler.h"
 #include "LoadHandler.h"
 #include "ImageProcessingHandler.h"
+#include "ImageProvider.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -29,6 +30,10 @@ public:
 
         m_image_model = std::make_shared<ImageModel>(data_manager);
         engine.rootContext()->setContextProperty("cpp_image_model", m_image_model.get());
+
+        //Image provider
+        auto image_provider = m_image_model->getImageProvider();
+        engine.addImageProvider("cpp_image_provider", image_provider);
 
         m_annotation_model = std::make_shared<AnnotationModel>(data_manager);
         engine.rootContext()->setContextProperty("cpp_annotation_model", m_annotation_model.get());
