@@ -77,7 +77,7 @@ public:
     }
 
     //-----------------------------------
-    QImage getImage()
+    QImage& getImage()
     {
         return m_image;
     }
@@ -85,8 +85,7 @@ public:
     //-----------------------------------
     void updateImage(QImage image)
     {
-        m_image = image;
-        m_image.save("/Users/Hilton/Desktop/opencv_lesson/text.png");
+        m_image = image.copy();
         ImageEvent::EventType event = ImageEvent::EventType::IMAGE_DATA_CHANGED;
         notify(event);
     }

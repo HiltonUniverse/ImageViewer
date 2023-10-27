@@ -45,13 +45,15 @@ signals:
 
 private:
     void loadModel();
+    void removeImages();
+    void setupConnection();
     void handleActiveImageChanged(std::shared_ptr<Image> image);
     void handleActiveImageAboutToChange(std::shared_ptr<Image> image);
     void handleImageAdded(std::shared_ptr<Image> image);
     void handleAnnotationAdded(std::shared_ptr<Annotation> annotation);
     void handleAnnotationRemoved(std::shared_ptr<Annotation> annotation);
 
-    void removeImages();
+
     QModelIndex getIndex(std::shared_ptr<Image> img);
     QModelIndex getIndex(Image* img);
 
@@ -59,7 +61,6 @@ private:
 
     std::vector<std::shared_ptr<Image>> m_images;
     DataManagerImpl& m_data_manager;
-    void setupConnection();
     //This must be a raw pointer as it's deleted by Qt itself later
     ImageProvider* m_image_provider;
 };

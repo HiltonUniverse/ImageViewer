@@ -185,7 +185,8 @@ void ImageProcessingHandler::wrapActiveImage()
         return;
     }
 
-    auto q_image = active_image->getImage();
+    //deep copy is necessary for proper perspective transformation.
+    auto q_image = active_image->getImage().copy();
     auto qimage_to_mat = convertQImageToCvMat(q_image);
     //This needs improvement: allow use to click on the image, from there we get the points and then we can wrap
     //we use setMouseCallback function to detect the image x and y coordiantes aka our src_points
@@ -207,6 +208,7 @@ void ImageProcessingHandler::wrapActiveImage()
         cv::Point{0,height},
         cv::Point{width,height}
     };
+
     cv::Mat prespective_mat = cv::getPerspectiveTransform(src_points, dest_points);
     cv::Mat warped_image;
     cv::warpPerspective(qimage_to_mat, warped_image, prespective_mat, cv::Point(width, height));
