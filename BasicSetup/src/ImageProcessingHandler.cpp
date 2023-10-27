@@ -187,7 +187,7 @@ void ImageProcessingHandler::wrapActiveImage()
 
     auto q_image = active_image->getImage();
     auto qimage_to_mat = convertQImageToCvMat(q_image);
-
+    //This needs improvement: allow use to click on the image, from there we get the points and then we can wrap
     //we use setMouseCallback function to detect the image x and y coordiantes aka our src_points
     cv::Point2f src_points[] =
     {
