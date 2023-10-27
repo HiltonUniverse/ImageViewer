@@ -43,6 +43,11 @@ signals:
 
 private:
     void loadModel();
+    void handleActiveImageChanged(std::shared_ptr<Image> image);
+    void handleActiveImageAboutToChange(std::shared_ptr<Image> image);
+    void handleImageAdded(std::shared_ptr<Image> image);
+    void handleAnnotationAdded(std::shared_ptr<Annotation> annotation);
+    void handleAnnotationRemoved(std::shared_ptr<Annotation> annotation);
 
     void removeImages();
     QModelIndex getIndex(std::shared_ptr<Image> img);

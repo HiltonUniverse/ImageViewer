@@ -28,55 +28,70 @@ void ImageModel::loadModel()
 //-----------------------------------
 void ImageModel::setupConnection()
 {
-    connect(&m_data_manager, &DataManagerImpl::activeImageAboutToChanged, [this](auto image)
+    connect(&m_data_manager, &DataManagerImpl::activeImageAboutToChanged, this, &ImageModel::handleActiveImageAboutToChange);
+
+    connect(&m_data_manager, &DataManagerImpl::activeImageChanged, this, &ImageModel::handleActiveImageChanged);
+
+    connect(&m_data_manager, &DataManagerImpl::annotationAdded, this, &ImageModel::handleAnnotationAdded);
+
+    connect(&m_data_manager, &DataManagerImpl::annotationRemoved, this, &ImageModel::handleAnnotationRemoved);
+
+    connect(&m_data_manager, &DataManagerImpl::imageAdded, this, &ImageModel::handleImageAdded);
+}
+
+//-----------------------------------
+void ImageModel::handleActiveImageChanged(std::shared_ptr<Image> image)
+{
+    if(!image)
     {
-        if(!image)
-        {
-            return;
-        }
+        return;
+    }
 
-        auto model_index = getIndex(image);
-        image->setSelected(false);
-        emit dataChanged(model_index, model_index, {ImageModel::Roles::IS_IMAGE_SELECTED});
-    });
+    auto model_index = getIndex(image);
+    emit dataChanged(model_index, model_index, {ImageModel::Roles::IS_IMAGE_SELECTED});
 
-    connect(&m_data_manager, &DataManagerImpl::activeImageChanged, [this](auto image)
+    //not the best solution!
+    m_image_provider->addImage(image->getId(), image->getImage());
+
+    emit activeImageChanged();
+}
+
+//-----------------------------------
+void ImageModel::handleActiveImageAboutToChange(std::shared_ptr<Image> image)
+{
+    if(!image)
     {
-        if(!image)
-        {
-            return;
-        }
+        return;
+    }
 
-        auto model_index = getIndex(image);
-        emit dataChanged(model_index, model_index, {ImageModel::Roles::IS_IMAGE_SELECTED});
+    auto model_index = getIndex(image);
+    image->setSelected(false);
+    emit dataChanged(model_index, model_index, {ImageModel::Roles::IS_IMAGE_SELECTED});
+}
 
-        //not the best solution!
-        m_image_provider->addImage(image->getId(), image->getImage());
+//-----------------------------------
+void ImageModel::handleImageAdded(std::shared_ptr<Image> image)
+{
+    beginInsertRows(QModelIndex(), rowCount(), rowCount());
 
-        emit activeImageChanged();
-    });
+    m_images.push_back(image);
+    m_image_provider->addImage(image->getId(), image->getImage());
 
-    connect(&m_data_manager, &DataManagerImpl::annotationAdded, [this]([[maybe_unused]]auto annotation)
-    {
-        auto model_index = getIndex(m_data_manager.getActiveImage());
-        emit dataChanged(model_index, model_index, {ImageModel::Roles::HAS_ANNOTATIONS});
-    });
+    endInsertRows();
+}
 
-    connect(&m_data_manager, &DataManagerImpl::annotationRemoved, [this]([[maybe_unused]]auto annotation)
-    {
-        auto model_index = getIndex(m_data_manager.getActiveImage());
-        emit dataChanged(model_index, model_index, {ImageModel::Roles::HAS_ANNOTATIONS});
-    });
+//-----------------------------------
+void ImageModel::handleAnnotationAdded(std::shared_ptr<Annotation> annotation)
+{
+    auto model_index = getIndex(m_data_manager.getActiveImage());
+    emit dataChanged(model_index, model_index, {ImageModel::Roles::HAS_ANNOTATIONS});
+}
 
-    connect(&m_data_manager, &DataManagerImpl::imageAdded, [this]([[maybe_unused]]auto image)
-    {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-
-        m_images.push_back(image);
-        m_image_provider->addImage(image->getId(), image->getImage());
-
-        endInsertRows();
-    });
+//-----------------------------------
+void ImageModel::handleAnnotationRemoved(std::shared_ptr<Annotation> annotation)
+{
+    auto model_index = getIndex(m_data_manager.getActiveImage());
+    emit dataChanged(model_index, model_index, {ImageModel::Roles::HAS_ANNOTATIONS});
 }
 
 //-----------------------------------
