@@ -5,7 +5,7 @@
 #include "UniqueKeyGenerator.h"
 
 #include <QString>
-
+#include <QImage>
 #include <vector>
 
 class Image : public DataObject
@@ -18,6 +18,7 @@ public:
         , m_id(UniqueKeyGenerator::getUniqueKey())
         , m_is_selected(false)
     {
+        loadImage();
     }
 
     //-----------------------------------
@@ -48,9 +49,35 @@ public:
     }
 
     //-----------------------------------
-    QString getPath() const
+    QString getPath()
     {
         return m_path;
+    }
+
+    //-----------------------------------
+    QString getTrimmedPath() const
+    {
+        QString new_path = m_path;
+        new_path.remove("file://");
+        return new_path;
+    }
+
+    //-----------------------------------
+    void loadImage()
+    {
+        QString image_path = m_path;
+        if(image_path.contains("file://"))
+        {
+            image_path.remove("file://");
+        }
+
+        m_image = QImage(image_path);
+    }
+
+    //-----------------------------------
+    QImage& getImage()
+    {
+        return m_image;
     }
 
     //-----------------------------------
@@ -88,6 +115,8 @@ private:
     QString m_name;
     QString m_id;
     bool m_is_selected;
+
+    QImage m_image;
 
     std::vector<std::shared_ptr<Annotation>> m_annotations;
 };

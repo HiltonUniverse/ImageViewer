@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Qt.labs.platform
 import QtQuick.Layouts
+import com.mycompany.qmlcomponents 1.1
 
 ApplicationWindow
 {
@@ -47,8 +48,7 @@ ApplicationWindow
 
             Layout.fillWidth: true
             Layout.preferredHeight: visible ? 30 : 0
-            onFreeHandStarted: split_viewer.drawing_canvas.setCanDraw(true)
-            onAddTextStarted: split_viewer.drawing_canvas.setCanAddText(true)
+            onFreeHandStarted: split_viewer.drawing_canvas.updateStatus(AnnotationState.DRAWING)
             onColorPenSelected: function(color)
             {
                 split_viewer.drawing_canvas.setPenColor(color)

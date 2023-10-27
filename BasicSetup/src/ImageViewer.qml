@@ -38,6 +38,13 @@ Rectangle
         }
     }
 
+    AnnotationHandler
+    {
+        id: drawing_canvas
+        objectName: "annotationHandlerQMl"
+        anchors.fill: main_viewer
+    }
+
     //put below the MouseArea of main view that activates on double click so it's rendered on top
     RowLayout
     {
@@ -137,12 +144,5 @@ Rectangle
                 }
             }
         }
-    }
-
-    AnnotationHandler
-    {
-        id: drawing_canvas
-        objectName: "annotationHandlerQMl"
-        anchors.fill: main_viewer
     }
 }

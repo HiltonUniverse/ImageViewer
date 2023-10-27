@@ -6,11 +6,11 @@
 #include <QQuickPaintedItem>
 #include <QPen>
 
-class AnnotationHandler : public QQuickPaintedItem, public pattern::Observer<Annotation, AnnotationEvent::EventType>
+struct AnnotationState : public QObject
 {
     Q_OBJECT
 public:
-    enum class AnnotationState
+    enum class State
     {
         NONE,
         DRAWING,
@@ -19,6 +19,14 @@ public:
         SELECTED,
         ADDING_TEXT
     };
+
+    Q_ENUM(State)
+};
+
+class AnnotationHandler : public QQuickPaintedItem, public pattern::Observer<Annotation, AnnotationEvent::EventType>
+{
+    Q_OBJECT
+public:
 
     AnnotationHandler();
 
@@ -30,15 +38,14 @@ public:
     void keyPressEvent(QKeyEvent *event) override;
 
     Q_INVOKABLE void setPenColor(const QString& penColor);
-    Q_INVOKABLE void setCanDraw(bool canDraw);
-    Q_INVOKABLE void setCanAddText(bool canAddText);
+    Q_INVOKABLE void updateStatus(AnnotationState::State newState);
 
 private:
     void setupConnection();
     void startAnnotationTranslation(QMouseEvent *event);
     void endAnnotationTranslation();
     void updateCursorShape();
-    void handleAnnotationStateChanged(AnnotationState &&state);
+    void handleAnnotationStateChanged(AnnotationState::State &&state);
     void handleAnnotationSelection(QMouseEvent* event);
     void setupToolTip(const QPointF& position);
 
@@ -52,6 +59,6 @@ private:
     QPointF m_initial_position;
     QPainterPath m_original_path;
     QVector<QPointF> m_current_points;
-    AnnotationState m_current_state;
+    AnnotationState::State m_current_state;
     std::vector<std::shared_ptr<Annotation>> m_annotations;
 };

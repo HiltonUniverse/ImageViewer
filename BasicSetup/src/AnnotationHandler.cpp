@@ -46,7 +46,7 @@ namespace
 
 //-----------------------------------
 AnnotationHandler::AnnotationHandler()
-    : m_current_state(AnnotationState::NONE)
+    : m_current_state(AnnotationState::State::NONE)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons({Qt::LeftButton, Qt::RightButton});
@@ -190,7 +190,7 @@ void AnnotationHandler::handleAnnotationSelection(QMouseEvent *event)
             annotation->setSelected(true);
             m_initial_position = event->pos(); //This is the initial translation point if dragging happens
             m_original_path = annotation->getPainterPath();
-            handleAnnotationStateChanged(AnnotationState::SELECTED);
+            handleAnnotationStateChanged(AnnotationState::State::SELECTED);
         }
         else
         {
@@ -205,15 +205,17 @@ void AnnotationHandler::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::RightButton)
     {
         //stop drawing action
-        handleAnnotationStateChanged(AnnotationState::NONE);
+        handleAnnotationStateChanged(AnnotationState::State::NONE);
         return;
     }
+
+    qWarning() << "Mouse point: " << event->position();
 
     if (event->button() == Qt::LeftButton)
     {
         handleAnnotationSelection(event);
 
-        if(m_current_state == AnnotationState::DRAWING)
+        if(m_current_state == AnnotationState::State::DRAWING)
         {
             m_current_points.append(event->position());
         }
@@ -228,7 +230,7 @@ void AnnotationHandler::startAnnotationTranslation(QMouseEvent* event)
     {
         if(annotation->isSelected())
         {
-            handleAnnotationStateChanged(AnnotationState::TRANSLATION_STARTED);
+            handleAnnotationStateChanged(AnnotationState::State::TRANSLATION_STARTED);
 
             auto& painter_path = annotation->getPainterPath();
             const auto delta = event->position() - m_initial_position;
@@ -245,7 +247,7 @@ void AnnotationHandler::startAnnotationTranslation(QMouseEvent* event)
 //-----------------------------------
 void AnnotationHandler::mouseMoveEvent(QMouseEvent *event)
 {
-    if(m_current_state == AnnotationState::DRAWING)
+    if(m_current_state == AnnotationState::State::DRAWING)
     {
         m_current_points.append(event->position());
     }
@@ -260,17 +262,17 @@ void AnnotationHandler::mouseMoveEvent(QMouseEvent *event)
 //-----------------------------------
 void AnnotationHandler::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(m_current_state == AnnotationState::TRANSLATION_STARTED)
+    if(m_current_state == AnnotationState::State::TRANSLATION_STARTED)
     {
         auto selected_annotation = getDataManager().getSelectedAnnotation();
         auto translation_undoredo = std::make_unique<AnnotationTranslationUndoRedo>(m_original_path
                                                                                     , selected_annotation);
         getDataManager().m_undo_stack.push(translation_undoredo.release());
 
-        handleAnnotationStateChanged(AnnotationState::TRANSLATION_ENDED);
+        handleAnnotationStateChanged(AnnotationState::State::TRANSLATION_ENDED);
     }
 
-    if(m_current_state == AnnotationState::DRAWING && event->button() == Qt::LeftButton)
+    if(m_current_state == AnnotationState::State::DRAWING && event->button() == Qt::LeftButton)
     {
         //No point in drawing if there is just one point, it's basically noise
         if(m_current_points.size() == 1)
@@ -350,24 +352,24 @@ void AnnotationHandler::updateCursorShape()
 {
     switch(m_current_state)
     {
-        case AnnotationState::NONE:
-        case AnnotationState::SELECTED:
-        case AnnotationState::TRANSLATION_ENDED:
+        case AnnotationState::State::NONE:
+        case AnnotationState::State::SELECTED:
+        case AnnotationState::State::TRANSLATION_ENDED:
         {
             setCursor(QCursor(Qt::ArrowCursor));
             return;
         }
-        case AnnotationState::DRAWING:
+        case AnnotationState::State::DRAWING:
         {
             setCursor(QCursor(Qt::CrossCursor));
             return;
         }
-        case AnnotationState::TRANSLATION_STARTED:
+        case AnnotationState::State::TRANSLATION_STARTED:
         {
             setCursor(QCursor(Qt::SizeAllCursor));
             return;
         }
-        case AnnotationState::ADDING_TEXT:
+        case AnnotationState::State::ADDING_TEXT:
         {
             setCursor(QCursor(Qt::IBeamCursor));
             return;
@@ -376,14 +378,14 @@ void AnnotationHandler::updateCursorShape()
 }
 
 //-----------------------------------
-void AnnotationHandler::handleAnnotationStateChanged(AnnotationState&& state)
+void AnnotationHandler::handleAnnotationStateChanged(AnnotationState::State&& state)
 {
     m_current_state = state;
     updateCursorShape();
 }
 
 //-----------------------------------
-void AnnotationHandler::setCanDraw(bool canDraw)
+void AnnotationHandler::updateStatus(AnnotationState::State newState)
 {
     if(!getDataManager().getActiveImage())
     {
@@ -391,35 +393,7 @@ void AnnotationHandler::setCanDraw(bool canDraw)
         return;
     }
 
-    if(canDraw)
-    {
-        m_current_state = AnnotationState::DRAWING;
-    }
-    else
-    {
-        m_current_state = AnnotationState::NONE;
-    }
-
-    updateCursorShape();
-}
-
-//-----------------------------------
-void AnnotationHandler::setCanAddText(bool canAddText)
-{
-    if(!getDataManager().getActiveImage())
-    {
-        qWarning() << "Upload/Select an image to start adding text!";
-        return;
-    }
-
-    if(canAddText)
-    {
-        m_current_state = AnnotationState::ADDING_TEXT;
-    }
-    else
-    {
-        m_current_state = AnnotationState::NONE;
-    }
+    m_current_state = newState;
 
     updateCursorShape();
 }

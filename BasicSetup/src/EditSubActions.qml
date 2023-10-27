@@ -10,7 +10,6 @@ Rectangle
     color: "#828282"
 
     signal freeHandStarted
-    signal addTextStarted
     signal colorPenSelected(var color)
     RowLayout
     {
@@ -106,32 +105,32 @@ Rectangle
             implicitWidth: 10
         }
 
-        //Add text
+        //Convert image to grayscale
         Action
         {
-            id: addTextAction
+            id: convertGrayscaleAction
             icon.name: "edit-freehand"
-            icon.source: "file:///Users/Hilton/Desktop/add_text.svg"
-            onTriggered: addTextStarted()
+            icon.source: "file:///Users/Hilton/Desktop/grayscale_icon.svg"
+            onTriggered: cpp_image_processing_handler.convertToGrayscale()
         }
 
         ToolButton
         {
-            id: addTextButton
-            action: addTextAction
+            id: convertGrayscaleButton
+            action: convertGrayscaleAction
 
             background: Rectangle
             {
                 width: parent.width
                 height: parent.height
-                color: addTextButton.hovered ? "#b7b7b7" : "transparent"
+                color: convertGrayscaleButton.hovered ? "#b7b7b7" : "transparent"
                 radius: 2
             }
 
             ToolTip
             {
-                visible: addTextButton.hovered
-                text: qsTr("Add text")
+                visible: convertGrayscaleButton.hovered
+                text: qsTr("GrayScale")
 
                 background: Rectangle
                 {
@@ -142,6 +141,113 @@ Rectangle
             }
         }
 
+        //Convert image to binary
+        Action
+        {
+            id: convertBinaryAction
+            icon.name: "edit-freehand"
+            icon.source: "file:///Users/Hilton/Desktop/binary.svg"
+            onTriggered: cpp_image_processing_handler.convertToBinary()
+        }
+
+        ToolButton
+        {
+            id: convertBinaryButton
+            action: convertBinaryAction
+
+            background: Rectangle
+            {
+                width: parent.width
+                height: parent.height
+                color: convertBinaryButton.hovered ? "#b7b7b7" : "transparent"
+                radius: 2
+            }
+
+            ToolTip
+            {
+                visible: convertBinaryButton.hovered
+                text: qsTr("Binary")
+
+                background: Rectangle
+                {
+                    color: Qt.rgba(0.74, 0.74, 0.74, 0.7)
+                    anchors.fill: parent
+                    radius: 2
+                }
+            }
+        }
+
+        //Convert image to inverse binary
+        Action
+        {
+            id: convertInverseBinaryAction
+            icon.name: "edit-freehand"
+            icon.source: "file:///Users/Hilton/Desktop/inverse_binary.svg"
+            onTriggered: cpp_image_processing_handler.convertToInverseBinary()
+        }
+
+        ToolButton
+        {
+            id: convertInverseBinaryButton
+            action: convertInverseBinaryAction
+
+            background: Rectangle
+            {
+                width: parent.width
+                height: parent.height
+                color: convertInverseBinaryButton.hovered ? "#b7b7b7" : "transparent"
+                radius: 2
+            }
+
+            ToolTip
+            {
+                visible: convertInverseBinaryButton.hovered
+                text: qsTr("Inverse Binary")
+
+                background: Rectangle
+                {
+                    color: Qt.rgba(0.74, 0.74, 0.74, 0.7)
+                    anchors.fill: parent
+                    radius: 2
+                }
+            }
+        }
+
+        //wrap action
+        Action
+        {
+            id: wrapImageAction
+            icon.name: "edit-freehand"
+            icon.source: "file:///Users/Hilton/Desktop/wrap.svg"
+            onTriggered: cpp_image_processing_handler.wrapActiveImage()
+        }
+
+        ToolButton
+        {
+            id: wrapImageButton
+            action: wrapImageAction
+
+            background: Rectangle
+            {
+                width: parent.width
+                height: parent.height
+                color: wrapImageButton.hovered ? "#b7b7b7" : "transparent"
+                radius: 2
+            }
+
+            ToolTip
+            {
+                visible: wrapImageButton.hovered
+                text: qsTr("Wrap")
+
+                background: Rectangle
+                {
+                    color: Qt.rgba(0.74, 0.74, 0.74, 0.7)
+                    anchors.fill: parent
+                    radius: 2
+                }
+            }
+        }
         Item
         {
             Layout.fillWidth: true

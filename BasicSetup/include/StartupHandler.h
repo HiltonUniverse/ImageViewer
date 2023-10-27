@@ -7,7 +7,7 @@
 #include "ResetAnnotationHandler.h"
 #include "SaveHandler.h"
 #include "LoadHandler.h"
-#include "DeleteHandler.h"
+#include "ImageProcessingHandler.h"
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -24,6 +24,8 @@ public:
         auto& data_manager = DataManager::instance();
 
         qmlRegisterType<AnnotationHandler>("com.mycompany.qmlcomponents", 1, 1, "AnnotationHandler");
+        //expose enum to qml so we can easily set the AnnotationState
+        qmlRegisterUncreatableType<AnnotationState>("com.mycompany.qmlcomponents", 1, 1, "AnnotationState", "Cannot create AnnotationState in QML");
 
         m_image_model = std::make_shared<ImageModel>(data_manager);
         engine.rootContext()->setContextProperty("cpp_image_model", m_image_model.get());
@@ -42,7 +44,8 @@ public:
         m_load_handler = std::make_shared<LoadHandler>(data_manager);
         engine.rootContext()->setContextProperty("cpp_load_handler", m_load_handler.get());
 
-        m_delete_handler = std::make_shared<DeleteHandler>(data_manager);
+        m_image_processing_handler = std::make_shared<ImageProcessingHandler>(data_manager);
+        engine.rootContext()->setContextProperty("cpp_image_processing_handler", m_image_processing_handler.get());
     }
 
 private:
@@ -51,5 +54,5 @@ private:
     std::shared_ptr<ResetAnnotationHandler> m_reset_annotation_handler;
     std::shared_ptr<SaveHandler> m_save_handler;
     std::shared_ptr<LoadHandler> m_load_handler;
-    std::shared_ptr<DeleteHandler> m_delete_handler;
+    std::shared_ptr<ImageProcessingHandler> m_image_processing_handler;
 };
