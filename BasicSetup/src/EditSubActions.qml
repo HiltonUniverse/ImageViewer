@@ -213,6 +213,12 @@ Rectangle
             }
         }
 
+        ToolSeparator
+        {
+            implicitHeight: 20
+            implicitWidth: 10
+        }
+
         //wrap action
         Action
         {
@@ -248,6 +254,7 @@ Rectangle
                 }
             }
         }
+
         Item
         {
             Layout.fillWidth: true
