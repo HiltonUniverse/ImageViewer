@@ -3,12 +3,14 @@
 #include "Annotation.h"
 #include "DataObject.h"
 #include "UniqueKeyGenerator.h"
+#include "ObserverPattern.h"
+#include "ImageEvent.h"
 
 #include <QString>
 #include <QImage>
 #include <vector>
 
-class Image : public DataObject
+class Image : public DataObject, public pattern::Observable<Image,ImageEvent::EventType>
 {
 public:
     //-----------------------------------
@@ -75,9 +77,18 @@ public:
     }
 
     //-----------------------------------
-    QImage& getImage()
+    QImage getImage()
     {
         return m_image;
+    }
+
+    //-----------------------------------
+    void updateImage(QImage image)
+    {
+        m_image = image;
+        m_image.save("/Users/Hilton/Desktop/opencv_lesson/text.png");
+        ImageEvent::EventType event = ImageEvent::EventType::IMAGE_DATA_CHANGED;
+        notify(event);
     }
 
     //-----------------------------------

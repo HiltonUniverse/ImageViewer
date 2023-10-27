@@ -1,14 +1,14 @@
 #pragma once
 
+#include "Image.h"
 #include "DataManager.h"
-
 #include "ImageProvider.h"
 
 #include <QAbstractListModel>
 #include <QObject>
 #include <QUrl>
 
-class ImageModel : public QAbstractListModel
+class ImageModel : public QAbstractListModel, public pattern::Observer<Image, ImageEvent::EventType>
 {
     Q_OBJECT
     Q_PROPERTY(QString active_image_id READ getActiveImageId NOTIFY activeImageChanged)
@@ -38,6 +38,8 @@ public:
 
     ImageProvider* getImageProvider() const;
 
+    void changed(Image* type, const ImageEvent::EventType& event) override;
+
 signals:
     void activeImageChanged();
 
@@ -51,6 +53,7 @@ private:
 
     void removeImages();
     QModelIndex getIndex(std::shared_ptr<Image> img);
+    QModelIndex getIndex(Image* img);
 
     QString getActiveImageId() const;
 

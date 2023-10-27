@@ -141,7 +141,9 @@ void ImageProcessingHandler::convertToBinary()
         return;
     }
 
-    toBinary(active_image->getImage());
+    auto binary_image = active_image->getImage();
+    toBinary(binary_image);
+    active_image->updateImage(binary_image);
 }
 
 //-----------------------------------
@@ -155,7 +157,9 @@ void ImageProcessingHandler::convertToInverseBinary()
         return;
     }
 
-    toInverseBinary(active_image->getImage());
+    auto inverseBinary_image = active_image->getImage();
+    toInverseBinary(inverseBinary_image);
+    active_image->updateImage(inverseBinary_image);
 }
 
 //-----------------------------------
@@ -181,7 +185,8 @@ void ImageProcessingHandler::wrapActiveImage()
         return;
     }
 
-    auto qimage_to_mat = convertQImageToCvMat(active_image->getImage());
+    auto q_image = active_image->getImage();
+    auto qimage_to_mat = convertQImageToCvMat(q_image);
 
     //we use setMouseCallback function to detect the image x and y coordiantes aka our src_points
     cv::Point2f src_points[] =
@@ -208,6 +213,8 @@ void ImageProcessingHandler::wrapActiveImage()
 
     QImage warped_qimage = convertCvMatToQImage(warped_image);
 
+    active_image->updateImage(warped_qimage);
+
     //cv::imshow("Before", qimage_to_mat);
     //cv::imshow("After warp", warped_image);
 
@@ -228,5 +235,7 @@ void ImageProcessingHandler::convertToGrayscale()
         return;
     }
 
-    toGraScale(active_image->getImage());
+    auto gray_image = active_image->getImage();
+    toGraScale(gray_image);
+    active_image->updateImage(gray_image);
 }

@@ -19,12 +19,13 @@ public:
     //-----------------------------------
     void addImage(const QString& id, const QImage& image)
     {
-        if(m_images.count(id))
-        {
-            return;
-        }
-
         m_images[id] = image;
+    }
+
+    //-----------------------------------
+    void removeImage(const QString& id)
+    {
+        m_images.erase(id);
     }
 
     //-----------------------------------

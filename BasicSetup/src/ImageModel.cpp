@@ -53,6 +53,8 @@ void ImageModel::handleActiveImageChanged(std::shared_ptr<Image> image)
     //not the best solution!
     m_image_provider->addImage(image->getId(), image->getImage());
 
+    image->attach(this);
+
     emit activeImageChanged();
 }
 
@@ -63,6 +65,8 @@ void ImageModel::handleActiveImageAboutToChange(std::shared_ptr<Image> image)
     {
         return;
     }
+
+    image->detach(this);
 
     auto model_index = getIndex(image);
     image->setSelected(false);
@@ -95,14 +99,18 @@ void ImageModel::handleAnnotationRemoved(std::shared_ptr<Annotation> annotation)
 }
 
 //-----------------------------------
-QModelIndex ImageModel::getIndex(std::shared_ptr<Image> img)
+QModelIndex ImageModel::getIndex(Image* img)
 {
     if(!img)
     {
         return {};
     }
 
-    auto itr = std::find(m_images.begin(), m_images.end(), img);
+    auto itr = std::find_if(m_images.begin(), m_images.end(), [img](const auto& shrdImage)
+    {
+        return (img == shrdImage.get());
+    });
+
     if(itr == m_images.end())
     {
         return {};
@@ -110,6 +118,12 @@ QModelIndex ImageModel::getIndex(std::shared_ptr<Image> img)
 
     int index = std::distance(m_images.begin(), itr);
     return createIndex(index, index);
+}
+
+//-----------------------------------
+QModelIndex ImageModel::getIndex(std::shared_ptr<Image> img)
+{
+    return getIndex(img.get());
 }
 
 //-----------------------------------
@@ -239,6 +253,17 @@ void ImageModel::loadDraggedDroppedImages(const QList<QUrl> &paths)
 ImageProvider *ImageModel::getImageProvider() const
 {
     return m_image_provider;
+}
+
+//-----------------------------------
+void ImageModel::changed(Image *type, const ImageEvent::EventType &event)
+{
+    switch(event)
+    {
+    case ImageEvent::EventType::IMAGE_DATA_CHANGED:
+        m_image_provider->addImage(type->getId(), type->getImage());
+        emit activeImageChanged();
+    }
 }
 
 //-----------------------------------

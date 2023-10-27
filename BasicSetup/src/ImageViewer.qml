@@ -34,8 +34,19 @@ Rectangle
 
             fillMode: Image.PreserveAspectFit
             Layout.alignment: Qt.AlignCenter
-            source: cpp_image_model && (cpp_image_model.active_image_id != "")? "image://cpp_image_provider/" + cpp_image_model.active_image_id
-                                                                              : ""
+            //this ensures that edited image is displayed
+            cache: false
+        }
+
+        Connections
+        {
+            //Reference to C++ object that triggers the signal
+            target: cpp_image_model
+            function onActiveImageChanged()
+            {
+                main_image.source = ""
+                main_image.source = cpp_image_model && (cpp_image_model.active_image_id != "") ? "image://cpp_image_provider/" + cpp_image_model.active_image_id : ""
+            }
         }
     }
 
