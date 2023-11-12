@@ -20,7 +20,7 @@ Rectangle
         {
             id: openColorAction
             icon.name: "edit-color-dialog"
-            icon.source: "file:///Users/Hilton/Desktop/color-palate.svg"
+            icon.source: "qrc:/images/color-palate.svg"
             onTriggered: penColorDialog.open()
         }
 
@@ -68,7 +68,7 @@ Rectangle
         {
             id: freeHandlDrawingAction
             icon.name: "edit-freehand"
-            icon.source: "file:///Users/Hilton/Desktop/free_hand.svg"
+            icon.source: "qrc:/images/free_hand.svg"
             onTriggered: freeHandStarted()
         }
 
@@ -110,7 +110,7 @@ Rectangle
         {
             id: convertGrayscaleAction
             icon.name: "edit-freehand"
-            icon.source: "file:///Users/Hilton/Desktop/grayscale_icon.svg"
+            icon.source: "qrc:/images/grayscale_icon.svg"
             onTriggered: cpp_image_processing_handler.convertToGrayscale()
         }
 
@@ -146,7 +146,7 @@ Rectangle
         {
             id: convertBinaryAction
             icon.name: "edit-freehand"
-            icon.source: "file:///Users/Hilton/Desktop/binary.svg"
+            icon.source: "qrc:/images/binary.svg"
             onTriggered: cpp_image_processing_handler.convertToBinary()
         }
 
@@ -182,7 +182,7 @@ Rectangle
         {
             id: convertInverseBinaryAction
             icon.name: "edit-freehand"
-            icon.source: "file:///Users/Hilton/Desktop/inverse_binary.svg"
+            icon.source: "qrc:/images/inverse_binary.svg"
             onTriggered: cpp_image_processing_handler.convertToInverseBinary()
         }
 
@@ -224,7 +224,7 @@ Rectangle
         {
             id: wrapImageAction
             icon.name: "edit-freehand"
-            icon.source: "file:///Users/Hilton/Desktop/wrap.svg"
+            icon.source: "qrc:/images/warp.svg"
             onTriggered: cpp_image_processing_handler.wrapActiveImage()
         }
 

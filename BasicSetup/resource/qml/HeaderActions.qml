@@ -28,7 +28,7 @@ ToolBar
         {
             id: saveAction
             icon.name: "edit-save"
-            icon.source: "file:///Users/Hilton/Desktop/save.svg"
+            icon.source: "qrc:/images/save.svg"
             shortcut: StandardKey.Save
             onTriggered: cpp_save_handler.start()
         }
@@ -66,7 +66,7 @@ ToolBar
         {
             id: undoAction
             icon.name: "edit-undo"
-            icon.source: "file:///Users/Hilton/Desktop/undo.svg"
+            icon.source: "qrc:/images/undo.svg"
             shortcut: StandardKey.Undo
             onTriggered: cpp_datamanager.undo();
         }
@@ -104,7 +104,7 @@ ToolBar
         {
             id: redoAction
             icon.name: "edit-redo"
-            icon.source: "file:///Users/Hilton/Desktop/redo.svg"
+            icon.source: "qrc:/images/redo.svg"
             shortcut: StandardKey.Redo
             onTriggered: cpp_datamanager.redo();
         }

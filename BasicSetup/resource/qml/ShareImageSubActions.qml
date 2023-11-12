@@ -15,7 +15,7 @@ Rectangle
         {
             id: shareImageAction
             icon.name: "share-image"
-            icon.source: "file:///Users/Hilton/Desktop/share_image.svg"
+            icon.source: "qrc:/images/share_image.svg"
             onTriggered: console.warn("SHARE IMAGE!")
         }
 

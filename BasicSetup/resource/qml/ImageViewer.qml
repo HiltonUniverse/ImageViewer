@@ -77,8 +77,8 @@ Rectangle
 
             Image
             {
-                source: splitView.handle === null ? "file:///Users/Hilton/Desktop/collapse.png"
-                                                 : "file:///Users/Hilton/Desktop/expand.png";
+                source: splitView.handle === null ? "qrc:/images/collapse.png"
+                                                 : "qrc:/images/expand.png";
                 width: parent.width
                 height: parent.height
             }
@@ -125,7 +125,7 @@ Rectangle
 
             Image
             {
-                source: "file:///Users/Hilton/Desktop/reset.svg";
+                source: "qrc:/images/reset.svg";
                 width: parent.width
                 height: parent.height
             }

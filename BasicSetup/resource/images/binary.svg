@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="1000" height="1000" viewBox="0 0 1000 1000" xml:space="preserve">
+
+<g transform="matrix(-1.1364 0 0 1.1364 500.0145 500.0145)" id="475268">
+<g style="" vector-effect="non-scaling-stroke">
+		<g transform="matrix(11.1111 0 0 11.1111 -155.5557 11.1107)" id="color">
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;" transform=" translate(-22, -37)" d="M 36 45 v -36 a 28 28 0 0 0 0 56 z" stroke-linecap="round"/>
+</g>
+		<g transform="matrix(11.1111 0 0 11.1111 155.5554 11.1107)" id="line">
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" translate(-50, -37)" d="M 36 45 v -36 a 28 28 0 0 1 0 56 z" stroke-linecap="round"/>
+</g>
+		<g transform="matrix(11.1111 0 0 11.1111 -0.0003 -0.0003)" id="line">
+<circle style="stroke: rgb(0,0,0); stroke-width: 2; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 4; is-custom-font: none; font-file-url: none; fill: none; fill-rule: nonzero; opacity: 1;" cx="0" cy="0" r="28"/>
+</g>
+</g>
+</g>
+</svg>

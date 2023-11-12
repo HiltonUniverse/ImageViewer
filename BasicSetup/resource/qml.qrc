@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/BrowseImage.qml</file>
+        <file>qml/EditSubActions.qml</file>
+        <file>qml/HeaderActions.qml</file>
+        <file>qml/ImageBrowseSelectionGrid.qml</file>
+        <file>qml/ImageDelegate.qml</file>
+        <file>qml/ImageViewer.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/ShareImageSubActions.qml</file>
+        <file>qml/SmartPanel.qml</file>
+        <file>qml/SplitViewer.qml</file>
+    </qresource>
+</RCC>

@@ -46,7 +46,7 @@ Rectangle
         Image
         {
             anchors.fill: parent
-            source: "file:///Users/Hilton/Desktop/annotation.svg"
+            source: "qrc:/images/annotation.svg"
             fillMode: Image.PreserveAspectFit
         }
 

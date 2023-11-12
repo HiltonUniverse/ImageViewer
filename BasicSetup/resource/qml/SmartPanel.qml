@@ -41,8 +41,8 @@ RowLayout
 
             Image
             {
-                source: smart_panel.visible ? "file:///Users/Hilton/Desktop/arrow_right.png"
-                                            : "file:///Users/Hilton/Desktop/arrow_left.png"
+                source: smart_panel.visible ? "qrc:/images/arrow_right.png"
+                                            : "qrc:/images/arrow_left.png"
 
                 width: parent.width
                 height: parent.height
