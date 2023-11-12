@@ -1,4 +1,4 @@
-set(APP_NAME "BasicSetupApp")
+set(APP_NAME "ImageViewerX")
 
 file(GLOB_RECURSE TARGET_SRC "src/*.cpp")
 file(GLOB_RECURSE TARGET_H "include/*.h")
@@ -10,16 +10,16 @@ qt_add_qml_module(${APP_NAME}
     URI Basic
     VERSION 1.0
     QML_FILES
-        src/main.qml
-        src/HeaderActions.qml
-        src/EditSubActions.qml
-        src/ShareImageSubActions.qml
-        src/ImageBrowseSelectionGrid.qml
-        src/ImageViewer.qml
-        src/SplitViewer.qml
-        src/SmartPanel.qml
-        src/ImageDelegate.qml
-        src/BrowseImage.qml
+        src/qml/main.qml
+        src/qml/HeaderActions.qml
+        src/qml/EditSubActions.qml
+        src/qml/ShareImageSubActions.qml
+        src/qml/ImageBrowseSelectionGrid.qml
+        src/qml/ImageViewer.qml
+        src/qml/SplitViewer.qml
+        src/qml/SmartPanel.qml
+        src/qml/ImageDelegate.qml
+        src/qml/BrowseImage.qml
 )
 
 target_link_libraries(${APP_NAME} PRIVATE Qt6::Quick Qt6::Widgets ${OpenCV_LIBS})

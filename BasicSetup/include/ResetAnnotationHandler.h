@@ -22,7 +22,18 @@ public:
     //-----------------------------------
     Q_INVOKABLE void start()
     {
-        auto current_annotations = m_datamanager.getActiveImage()->getAnnotations();
+        auto active_image = m_datamanager.getActiveImage();
+        if(!active_image)
+        {
+            return;
+        }
+
+        auto& current_annotations = active_image->getAnnotations();
+        if(current_annotations.empty())
+        {
+            return;
+        }
+
         auto reset_annotation_undo_redo = std::make_unique<ResetAnnotationUndoRedo>(m_datamanager
                                                                                     , current_annotations);
         m_datamanager.m_undo_stack.push(reset_annotation_undo_redo.release());
