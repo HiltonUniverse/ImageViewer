@@ -11,13 +11,11 @@ PROJECT(${PROJECT_NAME} LANGUAGES CXX)
 
 set(qt_bundles Quick Widgets)
 find_package(Qt6 REQUIRED COMPONENTS ${qt_bundles})
+message("Qt Version: ${Qt6_VERSION}")
 
 set(OpenCV_DIR /Users/Hilton/Desktop/setup/build_opencv)
 find_package(OpenCV REQUIRED)
-
-# Show a message with the opencv version detected
 MESSAGE("OpenCV version : ${OpenCV_VERSION}")
-
 # Add the paths to the include directories/to the header files
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 link_directories(${OpenCV_LIB_DIR})
