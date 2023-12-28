@@ -9,5 +9,5 @@ Some of the features this application provides are:
   * inverse binary) and
   * warp images using openCV
 * This also has an action to share image (yet to implement).
-* Serialization feature is also available.
+* Serialization feature is also available (save current state and relaod them afterwards).
 * User can draw annotation on top of a selected image and play around with it (undo/redo, select and move).
